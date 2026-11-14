@@ -265,6 +265,17 @@ a.st-link:hover .st-title { text-decoration: underline; text-decoration-thicknes
 .station.is-locked .st-link { cursor: not-allowed; }
 .station.is-bonus .st-title::after { content: ' *'; color: var(--ink-3); font-weight: 400; }
 
+/* ------------------------------------------------------------ site footer (legal notice, privacy) */
+.sitefoot {
+  max-width: 1200px; margin: 0 auto; padding: var(--s4) var(--s5) var(--s6);
+  display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5);
+  font-size: var(--fs-s); border-top: var(--w1) solid var(--rule-faint);
+}
+.sitefoot a { color: var(--ink-3); }
+.sitefoot a:hover { color: var(--ink); }
+/* The workspace fills the viewport; the links stay one click away on every other page. */
+html[data-view='level'] .sitefoot, html[data-view='sandbox'] .sitefoot { display: none; }
+
 /* ------------------------------------------------------------ workspace */
 html[data-view='level'] body, html[data-view='sandbox'] body { overflow: hidden; }
 .ws {
