@@ -46,12 +46,27 @@ function swInfo() {
   return { version: ctx.VERSION, precache: ctx.PRECACHE, src };
 }
 
-test('only relative URLs, except canonical, hreflang and Open Graph', { skip }, () => {
+// The footer links to the legal notice and privacy policy of the whole domain (not under /stapelwerk/).
+const LEGAL = {
+  'index.html': ['https://stefanpaun.page/impressum.html', 'https://stefanpaun.page/datenschutz.html'],
+  'en/index.html': ['https://stefanpaun.page/en/legal-notice.html', 'https://stefanpaun.page/en/privacy.html'],
+};
+
+test('footer links to legal notice and privacy policy in the right language', { skip }, () => {
+  for (const [shell, links] of Object.entries(LEGAL)) {
+    const foot = /<footer class="sitefoot">([\s\S]*?)<\/footer>/.exec(read(shell));
+    assert.ok(foot, `${shell}: no footer`);
+    assert.deepEqual([...foot[1].matchAll(/<a href="([^"]+)">/g)].map((m) => m[1]), links, shell);
+  }
+});
+
+test('only relative URLs, except canonical, hreflang, Open Graph and the legal links', { skip }, () => {
   for (const shell of shells) {
     const dir = path.posix.dirname(shell);
     for (const { tag, attrs, url } of urls(read(shell))) {
       if (url.startsWith('#')) continue;
       if (/^https?:/.test(url)) {
+        if (tag === 'a' && (LEGAL[shell] || []).includes(url)) continue;
         const allowed = (tag === 'link' && /rel="(canonical|alternate)"/.test(attrs)) || tag === 'meta';
         assert.ok(allowed, `${shell}: absolute URL ${url} in <${tag}>`);
         assert.ok(url.startsWith(SITE), `${shell}: ${url} is not on ${SITE}`);

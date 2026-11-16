@@ -138,6 +138,8 @@ function englishShell(de) {
     ['data-route="about">Über</a>', 'data-route="about">About</a>'],
     ['<a class="lang-link" href="en/" hreflang="en" lang="en">English</a>', '<a class="lang-link" href="../" hreflang="de" lang="de">Deutsch</a>'],
     ['aria-label="Tastenkürzel"', 'aria-label="Keyboard shortcuts"'],
+    ['<a href="https://stefanpaun.page/impressum.html">Impressum</a>', '<a href="https://stefanpaun.page/en/legal-notice.html">Legal notice</a>'],
+    ['<a href="https://stefanpaun.page/datenschutz.html">Datenschutz</a>', '<a href="https://stefanpaun.page/en/privacy.html">Privacy</a>'],
     ['aria-label="Thema wechseln"', 'aria-label="Switch theme"'],
     [/<noscript><p class="page">[^<]*<\/p><\/noscript>/, '<noscript><p class="page">Stapelwerk needs JavaScript: the machine runs as WebAssembly in your browser. No data is sent anywhere.</p></noscript>'],
   ];
