@@ -7,7 +7,7 @@ Thanks for wanting to help. Small, focused contributions are the easiest to revi
 You need [rustup](https://rustup.rs) and Node 22 or newer. There are no npm packages and no third-party crates, so there is nothing to install beyond that. `rust-toolchain.toml` pins Rust 1.99.1 with `rustfmt`, `clippy` and the `wasm32-unknown-unknown` target; rustup installs them on first use.
 
 ```sh
-git clone https://github.com/Stefan-Paun/stapelwerk.git
+git clone https://github.com/Stefan-Paun/stackworks.git
 cd stapelwerk
 npm start              # build, then serve http://127.0.0.1:4860/stapelwerk/ (English: /stapelwerk/en/)
 ```

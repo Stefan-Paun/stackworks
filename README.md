@@ -8,7 +8,7 @@ Thirty puzzles in eight chapters take you from changing one register to linked l
 
 ![Stapelwerk: a level with the editor, the debugger, registers and the stack](docs/img/demo.gif)
 
-**[▶ Play it in your browser](https://stefanpaun.page/stapelwerk/en/)** (no install, no account) · [German version of the game](https://stefanpaun.page/stapelwerk/)
+**[▶ Play it in your browser](https://stefanpaun.page/stackworks/en/)** (no install, no account) · [German version of the game](https://stefanpaun.page/stackworks/)
 
 - Runs in the browser, no account, nothing to install, works offline after the first visit.
 - A home-made CPU written in Rust with zero third-party crates, compiled to WebAssembly.
@@ -58,7 +58,7 @@ Seven levels are **debugging levels**: the start code has a bug, and you find it
 
 - No account, no sign-up, no data collection. Progress stays in the student's browser and can be exported as a file.
 - Works offline once the page has been opened, and can be run from a local copy (see below).
-- **Unlock everything** in the chapter plan opens all levels at once, for example to show one on a projector. Each level has its own link, such as `https://stefanpaun.page/stapelwerk/en/#/level/2-2-bis-zur-null`.
+- **Unlock everything** in the chapter plan opens all levels at once, for example to show one on a projector. Each level has its own link, such as `https://stefanpaun.page/stackworks/en/#/level/2-2-bis-zur-null`.
 - The level files, including reference solutions and hidden tests, are public in this repository. Stapelwerk is a practice tool, not an exam tool.
 
 ## Run it locally
@@ -66,7 +66,7 @@ Seven levels are **debugging levels**: the start code has a bug, and you find it
 You need [rustup](https://rustup.rs) and Node 22 or newer. There is nothing to `npm install`. `rust-toolchain.toml` pins Rust 1.99.1 with the `wasm32-unknown-unknown` target; rustup installs it on first use.
 
 ```sh
-git clone https://github.com/Stefan-Paun/stapelwerk.git
+git clone https://github.com/Stefan-Paun/stackworks.git
 cd stapelwerk
 npm start          # builds the core and the site, serves http://127.0.0.1:4860/stapelwerk/
 ```
@@ -192,7 +192,7 @@ I'm Stefan, 17, a student in Vienna. I wanted a game that explains what really h
 
 The idea, the choice of topics, the chapter plan and the decisions along the way are mine, and I accepted or sent back every step. The code, the levels and the texts were written by Claude Code agents (Claude Opus) from a written specification. Their work was checked several times: by separate review agents that had not written it, and by the automated checks above (over 200 Rust tests, over 90 Node tests, a differential test of native against WebAssembly, and a mutation test that catches all 550 deletions in the reference solutions).
 
-That is a lot of checking, but it is not a guarantee. Mistakes are possible, in the code and in the texts. If you find one, please [open an issue](https://github.com/Stefan-Paun/stapelwerk/issues).
+That is a lot of checking, but it is not a guarantee. Mistakes are possible, in the code and in the texts. If you find one, please [open an issue](https://github.com/Stefan-Paun/stackworks/issues).
 
 ## Contributing
 

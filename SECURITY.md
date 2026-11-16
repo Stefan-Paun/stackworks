@@ -9,11 +9,11 @@ Stapelwerk is a static site: HTML, CSS, JavaScript modules and one WebAssembly m
 | 1.0.x | yes |
 | older | no |
 
-The live site at <https://stefanpaun.page/stapelwerk/> always runs the latest version from `main`.
+The live site at <https://stefanpaun.page/stackworks/> always runs the latest version from `main`.
 
 ## Reporting a vulnerability
 
-Please do **not** open a public issue. Use GitHub's private vulnerability reporting instead: **Security → Report a vulnerability** on this repository ([direct link](https://github.com/Stefan-Paun/stapelwerk/security/advisories/new)). This is the only reporting channel.
+Please do **not** open a public issue. Use GitHub's private vulnerability reporting instead: **Security → Report a vulnerability** on this repository ([direct link](https://github.com/Stefan-Paun/stackworks/security/advisories/new)). This is the only reporting channel.
 
 Please include what you did, what happened, and if possible a level file, program or share link that shows it. You will get an answer within a week. This is a hobby project, so there is no bug bounty.
 

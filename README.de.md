@@ -8,7 +8,7 @@ Dreißig Rätsel in acht Kapiteln führen vom Ändern eines einzigen Registers b
 
 ![Stapelwerk: ein Level mit Editor, Debugger, Registern und Stack](docs/img/demo.gif)
 
-**[▶ Im Browser spielen](https://stefanpaun.page/stapelwerk/)** (ohne Installation, ohne Konto) · [englische Fassung des Spiels](https://stefanpaun.page/stapelwerk/en/)
+**[▶ Im Browser spielen](https://stefanpaun.page/stackworks/)** (ohne Installation, ohne Konto) · [englische Fassung des Spiels](https://stefanpaun.page/stackworks/en/)
 
 - Läuft im Browser, ohne Konto, ohne Installation, nach dem ersten Besuch auch offline.
 - Eine selbst entworfene CPU in Rust, ohne fremde Crates, als WebAssembly übersetzt.
@@ -58,7 +58,7 @@ Sieben Levels sind **Debugging-Levels**: Der Startcode hat einen Fehler, und du 
 
 - Kein Konto, keine Anmeldung, keine Datensammlung. Der Fortschritt bleibt im Browser der Schülerin oder des Schülers und lässt sich als Datei exportieren.
 - Funktioniert offline, sobald die Seite einmal geöffnet war, und läuft auch als lokale Kopie (siehe unten).
-- **Alles freischalten** im Kapitelplan öffnet alle Levels auf einmal, etwa um eines am Beamer zu zeigen. Jedes Level hat einen eigenen Link, zum Beispiel `https://stefanpaun.page/stapelwerk/#/level/2-2-bis-zur-null`.
+- **Alles freischalten** im Kapitelplan öffnet alle Levels auf einmal, etwa um eines am Beamer zu zeigen. Jedes Level hat einen eigenen Link, zum Beispiel `https://stefanpaun.page/stackworks/#/level/2-2-bis-zur-null`.
 - Die Level-Dateien samt Referenzlösungen und verdeckten Tests liegen offen in diesem Repository. Stapelwerk ist ein Übungswerkzeug, kein Prüfungswerkzeug.
 
 ## Lokal starten
@@ -66,7 +66,7 @@ Sieben Levels sind **Debugging-Levels**: Der Startcode hat einen Fehler, und du 
 Du brauchst [rustup](https://rustup.rs) und Node 22 oder neuer. `npm install` ist nicht nötig, es gibt keine Pakete. `rust-toolchain.toml` legt Rust 1.99.1 mit dem Ziel `wasm32-unknown-unknown` fest; rustup installiert das beim ersten Aufruf.
 
 ```sh
-git clone https://github.com/Stefan-Paun/stapelwerk.git
+git clone https://github.com/Stefan-Paun/stackworks.git
 cd stapelwerk
 npm start          # baut Kern und Seite, startet http://127.0.0.1:4860/stapelwerk/
 ```
@@ -192,7 +192,7 @@ Ich bin Stefan, 17, Schüler in Wien. Ich wollte ein Spiel, das erklärt, was in
 
 Die Idee, die Auswahl der Themen, der Kapitelplan und die Entscheidungen unterwegs sind von mir, und ich habe jeden Schritt abgenommen oder zurückgeschickt. Code, Levels und Texte haben Claude-Code-Agenten (Claude Opus) nach einer schriftlichen Spezifikation geschrieben. Geprüft wurde ihre Arbeit mehrfach: von eigenen Review-Agenten, die sie nicht geschrieben hatten, und von den automatischen Prüfungen oben (über 200 Rust-Tests, über 90 Node-Tests, ein Differenzialtest nativ gegen WebAssembly und ein Mutationstest, der alle 550 Löschungen in den Referenzlösungen erkennt).
 
-Das ist viel Prüfung, aber keine Garantie. Fehler sind möglich, im Code wie in den Texten. Wenn du einen findest, [mach bitte ein Issue auf](https://github.com/Stefan-Paun/stapelwerk/issues).
+Das ist viel Prüfung, aber keine Garantie. Fehler sind möglich, im Code wie in den Texten. Wenn du einen findest, [mach bitte ein Issue auf](https://github.com/Stefan-Paun/stackworks/issues).
 
 ## Mitmachen
 

@@ -22,4 +22,4 @@ First public release.
 - **Accessibility:** keyboard shortcuts for the whole debugger, live region for debugger steps, stack as a table, reduced motion and forced colours respected, changes marked by more than colour.
 - **Tests and CI:** Rust tests (including an exhaustive test over all 2³² instruction words in CI), Node tests, browser tests in headless Chrome, a differential test of native against WebAssembly, the level mutation test, CodeQL, and GitHub Pages deployment.
 
-[1.0.0]: https://github.com/Stefan-Paun/stapelwerk/releases/tag/v1.0.0
+[1.0.0]: https://github.com/Stefan-Paun/stackworks/releases/tag/v1.0.0

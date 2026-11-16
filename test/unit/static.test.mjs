@@ -45,10 +45,10 @@ test('index.html: CSP meta before any script, no inline script or style', () => 
 
 test('canonical, hreflang and og use the public URL', () => {
   const html = readFileSync(path.join(web, 'index.html'), 'utf8');
-  assert.match(html, /rel="canonical" href="https:\/\/stefanpaun\.page\/stapelwerk\/"/);
-  assert.match(html, /hreflang="en" href="https:\/\/stefanpaun\.page\/stapelwerk\/en\/"/);
-  assert.match(html, /hreflang="x-default" href="https:\/\/stefanpaun\.page\/stapelwerk\/"/);
-  assert.match(html, /property="og:url" content="https:\/\/stefanpaun\.page\/stapelwerk\/"/);
+  assert.match(html, /rel="canonical" href="https:\/\/stefanpaun\.page\/stackworks\/"/);
+  assert.match(html, /hreflang="en" href="https:\/\/stefanpaun\.page\/stackworks\/en\/"/);
+  assert.match(html, /hreflang="x-default" href="https:\/\/stefanpaun\.page\/stackworks\/"/);
+  assert.match(html, /property="og:url" content="https:\/\/stefanpaun\.page\/stackworks\/"/);
 });
 
 test('no private paths or e-mail addresses in web/', () => {
