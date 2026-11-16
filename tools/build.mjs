@@ -117,7 +117,7 @@ function listFiles(dir) {
  * shell fails the build instead of producing a half-German English page.
  */
 function englishShell(de) {
-  const SITE = 'https://stefanpaun.page/stapelwerk/';
+  const SITE = 'https://stefanpaun.page/stackworks/';
   const title = 'Stapelwerk · Assembly puzzles on a CPU of its own';
   const replacements = [
     ['<html lang="de">', '<html lang="en">'],

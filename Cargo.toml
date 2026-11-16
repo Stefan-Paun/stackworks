@@ -7,7 +7,7 @@ version = "1.0.0"
 edition = "2024"
 rust-version = "1.99.1"
 license = "MIT"
-repository = "https://github.com/Stefan-Paun/stapelwerk"
+repository = "https://github.com/Stefan-Paun/stackworks"
 publish = false
 
 # Zero third-party crates, including dev-dependencies (see docs/STATUS.md and SPEC section 1).

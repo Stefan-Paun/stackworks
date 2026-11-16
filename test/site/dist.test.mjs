@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = path.join(ROOT, 'dist');
-const SITE = 'https://stefanpaun.page/stapelwerk/';
+const SITE = 'https://stefanpaun.page/stackworks/';
 const built = existsSync(path.join(DIST, 'index.html')) && existsSync(path.join(DIST, 'sw.js'));
 const skip = built ? false : 'dist/ is not built (npm run build)';
 

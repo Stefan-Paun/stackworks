@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-delegated (vom Bauvertrag festgelegt): statische Seite ohne Bundler und ohne npm-Pakete. Oberfläche in Vanilla-JS (ES-Module), handgeschriebenes CSS, CPU-Kern in Rust ohne fremde Crates, als WebAssembly geladen (`web/js/vm.js` ist die einzige WASM-Stelle). Veröffentlicht über GitHub Pages unter `https://stefanpaun.page/stapelwerk/` (deutsch) und `/stapelwerk/en/` (englisch). Begründung: jeder kann den Code ohne Werkzeugkette lesen, forken und offline benutzen; Schulrechner brauchen keine Installation.
+delegated (vom Bauvertrag festgelegt): statische Seite ohne Bundler und ohne npm-Pakete. Oberfläche in Vanilla-JS (ES-Module), handgeschriebenes CSS, CPU-Kern in Rust ohne fremde Crates, als WebAssembly geladen (`web/js/vm.js` ist die einzige WASM-Stelle). Veröffentlicht über GitHub Pages unter `https://stefanpaun.page/stackworks/` (deutsch) und `/stapelwerk/en/` (englisch). Begründung: jeder kann den Code ohne Werkzeugkette lesen, forken und offline benutzen; Schulrechner brauchen keine Installation.
 
 ## Users
 
