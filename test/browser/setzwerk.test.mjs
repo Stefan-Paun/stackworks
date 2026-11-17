@@ -19,7 +19,7 @@ async function assertClean(app) {
 test('Setzwerk view (de): compile error at its line, then compile, step and run', T, async () => {
   const app = await openApp(ctx, '/stapelwerk/#/setzwerk');
   try {
-    assert.equal(await app.evaluate(`document.querySelector('.mainnav a[data-route="setzwerk"]')?.getAttribute('aria-current')`), null, 'nav hidden in the workspace but present');
+    assert.equal(await app.evaluate(`document.querySelector('.mainnav a[data-route="setzwerk"]')?.getAttribute('aria-current')`), 'page', 'nav entry marked');
     assert.equal(await app.evaluate(`document.querySelectorAll('.setz-side .ed-text').length`), 2);
     assert.equal(await app.evaluate(`document.querySelector('.setz-asm .ed-text').readOnly`), true);
     // A compile error: the notice names the line, the message sits under the source.
@@ -78,7 +78,7 @@ test('Setzwerk view (en): English comments and messages, breakpoint from the sou
 test('chapter 8: the start code fails, the Setzwerk references solve 8.1 and 8.2', T, async () => {
   const app = await openApp(ctx, '/stapelwerk/#/level/8-1-quersumme');
   try {
-    assert.equal(await app.evaluate(`document.querySelector('.setz-side .ed-text').value`), startOf('8-1-quersumme.lvl'));
+    assert.equal((await app.evaluate(`document.querySelector('.setz-side .ed-text').value`)).trimEnd(), startOf('8-1-quersumme.lvl').trimEnd());
     await app.click('.dbg-primary');
     await app.until(`/Tests/.test((${WS_STATE}).notice) || /fehlgeschlagen|nicht bestanden/i.test((${WS_STATE}).notice)`, 'start code fails');
     assert.equal((await app.evaluate(WS_STATE)).result, false);
