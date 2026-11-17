@@ -6,7 +6,7 @@ use stapelwerk_core::consts::{SEGMENTS, Segment, segment_of};
 use stapelwerk_core::diag::{Diagnostic, FILE_LIBRARY, FILE_PLAYER};
 use stapelwerk_core::isa::{Instr, decode};
 use stapelwerk_core::level::pack::{Manifest, index_json, parse_manifest};
-use stapelwerk_core::level::{HINT_COUNT, Level, LevelKind, MemValues, parse};
+use stapelwerk_core::level::{HINT_COUNT, Language, Level, LevelKind, MemValues, parse};
 use stapelwerk_core::program::{Program, SymbolKind};
 use stapelwerk_core::runner::{
     PackError, Reference, ScreenRef, assemble_level, pack_level, resolve_addr, run_reference,
@@ -98,8 +98,176 @@ struct LevelCheck {
     summary: String,
 }
 
-/// Checks one level file (`strict`, `mutate` as on the command line).
+/// Replaces the content of section `[name]` in a level source (up to the next section header).
+/// Returns `src` unchanged if the section does not exist.
+fn replace_section(src: &str, name: &str, content: &str) -> String {
+    let header = format!("[{name}]");
+    let is_header = |l: &str| {
+        let t = l.trim();
+        t.len() > 2
+            && t.starts_with('[')
+            && t.ends_with(']')
+            && t[1..t.len() - 1]
+                .bytes()
+                .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'_' || b == b'-')
+    };
+    let mut out = String::with_capacity(src.len() + content.len());
+    let mut lines = src.split_inclusive('\n').peekable();
+    let mut found = false;
+    while let Some(l) = lines.next() {
+        out.push_str(l);
+        if !found && l.trim() == header {
+            found = true;
+            while lines.peek().is_some_and(|n| !is_header(n)) {
+                lines.next();
+            }
+            out.push_str(content);
+            if !content.ends_with('\n') {
+                out.push('\n');
+            }
+        }
+    }
+    out
+}
+
+/// A Setzwerk level with `[reference]` (and, if `with_start`, `[start]`) compiled to assembly,
+/// so the core can check or pack it like any other level. Compile errors come back with lines
+/// of the `.lvl` file.
+pub(crate) fn compile_setz_level(
+    file: &str,
+    src: &str,
+    level: &Level,
+    with_start: bool,
+) -> Result<String, Vec<String>> {
+    let mut out = src.to_string();
+    let mut problems = Vec::new();
+    let sections: &[&str] = if with_start {
+        &["reference", "start"]
+    } else {
+        &["reference"]
+    };
+    for name in sections {
+        let Some(code) = level.section(name) else {
+            continue;
+        };
+        match stapelwerk_setz::compile(code, &format!("{name}.sz")) {
+            Ok(asm) => out = replace_section(&out, name, &asm),
+            Err(e) => {
+                let base = section_first_line(src, name).unwrap_or(1);
+                problems.push(format!(
+                    "{file}:{}:{}: [{name}] {}",
+                    base + e.pos.line.saturating_sub(1),
+                    e.pos.col,
+                    e.msg
+                ));
+            }
+        }
+    }
+    if problems.is_empty() {
+        Ok(out)
+    } else {
+        Err(problems)
+    }
+}
+
+/// Checks one level file (`strict`, `mutate` as on the command line). Setzwerk levels are
+/// compiled first and then checked like assembly levels; their mutation test deletes Setzwerk
+/// statements instead of instructions.
 fn check_level(file: &str, src: &str, strict: bool, mutate: bool) -> LevelCheck {
+    let level = match parse(src) {
+        Ok(l) if l.language == Language::Setz => l,
+        _ => return check_asm_level(file, src, strict, mutate),
+    };
+    let compiled = match compile_setz_level(file, src, &level, true) {
+        Ok(c) => c,
+        Err(problems) => {
+            return LevelCheck {
+                problems,
+                level: Some(level),
+                summary: String::new(),
+            };
+        }
+    };
+    let mut c = check_asm_level(file, &compiled, strict, false);
+    if mutate
+        && let Some(asm_level) = &c.level
+        && let (Ok(Some(r)), Some(ref_src)) = (run_reference(asm_level), level.section("reference"))
+    {
+        let (msgs, note) = setz_mutation_check(file, src, asm_level, ref_src, &r);
+        c.problems.extend(msgs);
+        c.summary.push_str(&note);
+    }
+    c.summary.push_str(" (Setzwerk)");
+    c
+}
+
+/// Mutation test of a Setzwerk reference: deletes each statement line in turn (lines that only
+/// open or close a block, `fn` headers, blank and comment lines stay). A mutant that no longer
+/// compiles counts as caught, like an assembly mutant that no longer assembles.
+fn setz_mutation_check(
+    file: &str,
+    src: &str,
+    asm_level: &Level,
+    ref_src: &str,
+    reference: &Reference,
+) -> (Vec<String>, String) {
+    let mut problems = Vec::new();
+    let base = section_first_line(src, "reference").unwrap_or(1);
+    let lines: Vec<&str> = ref_src.split('\n').collect();
+    let (mut killed, mut by_compiler, mut skipped, mut total) = (0usize, 0usize, 0usize, 0usize);
+    for (i, text) in lines.iter().enumerate() {
+        let (code, comment) = match text.find("//") {
+            Some(k) => (&text[..k], &text[k..]),
+            None => (*text, ""),
+        };
+        let code = code.trim();
+        let structural = code.is_empty()
+            || code.ends_with('{')
+            || code.starts_with("fn ")
+            || code.chars().all(|c| c == '}' || c.is_whitespace());
+        if structural {
+            continue;
+        }
+        if comment.contains(MUTATE_SKIP) {
+            skipped += 1;
+            continue;
+        }
+        total += 1;
+        let mutant: String = lines
+            .iter()
+            .enumerate()
+            .map(|(j, l)| if j == i { "" } else { l })
+            .collect::<Vec<_>>()
+            .join("\n");
+        let caught = match stapelwerk_setz::compile(&mutant, "mutant.sz") {
+            Err(_) => {
+                by_compiler += 1;
+                true
+            }
+            Ok(asm) => mutant_is_killed(asm_level, &asm, reference),
+        };
+        if caught {
+            killed += 1;
+        } else {
+            problems.push(format!(
+                "{file}:{}: tests too weak: the reference without `{code}` still passes every test",
+                base + i as u32
+            ));
+        }
+    }
+    if skipped > MAX_MUTATE_SKIPS {
+        problems.push(format!(
+            "{file}: {skipped} lines carry '// {MUTATE_SKIP}' (at most {MAX_MUTATE_SKIPS} allowed)"
+        ));
+    }
+    let note = format!(
+        ", {killed}/{total} statement deletions caught ({by_compiler} by the compiler), {skipped} skipped"
+    );
+    (problems, note)
+}
+
+/// Checks one assembly level file.
+fn check_asm_level(file: &str, src: &str, strict: bool, mutate: bool) -> LevelCheck {
     let mut problems = Vec::new();
     let level = match parse(src) {
         Ok(l) => l,
@@ -635,6 +803,23 @@ pub fn cmd_pack_levels(p: &Parsed, out: &mut dyn Write, err: &mut dyn Write) -> 
                 continue;
             }
         };
+        // Setzwerk levels: the reference is compiled for packing (and then removed), the start
+        // code stays Setzwerk source for the player.
+        let src = match parse(&src) {
+            Ok(l) if l.language == Language::Setz => {
+                match compile_setz_level(&name, &src, &l, false) {
+                    Ok(c) => c,
+                    Err(problems) => {
+                        for msg in problems {
+                            let _ = writeln!(err, "{msg}");
+                        }
+                        failed = true;
+                        continue;
+                    }
+                }
+            }
+            _ => src,
+        };
         match pack_level(&src) {
             Ok(pl) => {
                 let reference_ok = run_reference(&parse(&src).unwrap_or_default())
@@ -704,6 +889,16 @@ pub fn cmd_pack_levels(p: &Parsed, out: &mut dyn Write, err: &mut dyn Write) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn replace_section_keeps_the_rest() {
+        let src = "[level]\nid = x\n[start]\nfn main() {\n}\n[text.de]\nHallo\n";
+        assert_eq!(
+            replace_section(src, "start", "halt"),
+            "[level]\nid = x\n[start]\nhalt\n[text.de]\nHallo\n"
+        );
+        assert_eq!(replace_section(src, "reference", "halt"), src);
+    }
 
     #[test]
     fn labels_and_comments() {

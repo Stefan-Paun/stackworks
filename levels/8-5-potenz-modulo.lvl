@@ -1,0 +1,240 @@
+[level]
+id = 8-5-potenz-modulo
+version = 1
+chapter = 8
+order = 5
+kind = final
+language = setz
+title.de = Potenz modulo
+title.en = Power Modulo
+card.de = Schnelles Potenzieren: aus Milliarden Multiplikationen werden 31.
+card.en = Fast exponentiation: billions of multiplications become 31.
+budget = 100000
+seed = 8501
+mobile = no
+
+[text.de]
+Schreib die Funktion `potmod(b, e, m)`: Sie gibt **b hoch e modulo m** zurück, also den Rest von bᵉ geteilt durch m. Die Tests rufen sie direkt auf: b in r0, e in r1, m in r2, Ergebnis in r0.
+
+Grenzen: 0 ≤ b, 0 ≤ e ≤ 2147483647 und 1 ≤ m ≤ 46340. Damit passt jedes Produkt zweier Reste in 32 Bit. b⁰ ist 1 (modulo m). e kann riesig sein: e-mal zu multiplizieren reicht im Budget nicht.
+
+Beispiel: potmod(3, 13, 7) = 3¹³ mod 7 = 3.
+
+[text.en]
+Write the function `potmod(b, e, m)`: it returns **b to the power of e modulo m**, the remainder of bᵉ divided by m. The tests call it directly: b in r0, e in r1, m in r2, result in r0.
+
+Limits: 0 ≤ b, 0 ≤ e ≤ 2147483647 and 1 ≤ m ≤ 46340. That way every product of two remainders fits into 32 bits. b⁰ is 1 (modulo m). e can be huge: multiplying e times does not fit into the budget.
+
+Example: potmod(3, 13, 7) = 3¹³ mod 7 = 3.
+
+[hint.de]
+bᵉ = (b^(e/2))² für gerades e, und bᵉ = (b^(e/2))² · b für ungerades e (mit ganzzahligem e / 2). Damit halbiert sich e bei jedem Schritt.
+---
+Nimm nach **jeder** Multiplikation `% m`, sonst läuft das Produkt über 32 Bit hinaus. Und denk an m = 1: Dann ist jedes Ergebnis 0, auch für e = 0.
+---
+```
+fn potmod(b, e, m) {
+    if (e == 0) { return 1 % m; }
+    var h = potmod(b, e / 2, m);
+    // ??? h quadrieren, modulo m
+    // ??? bei ungeradem e noch einmal mit b malnehmen
+    return h;
+}
+```
+
+[hint.en]
+bᵉ = (b^(e/2))² for even e, and bᵉ = (b^(e/2))² · b for odd e (with integer e / 2). That halves e at every step.
+---
+Take `% m` after **every** multiplication, otherwise the product runs past 32 bits. And remember m = 1: then every result is 0, also for e = 0.
+---
+```
+fn potmod(b, e, m) {
+    if (e == 0) { return 1 % m; }
+    var h = potmod(b, e / 2, m);
+    // ??? square h, modulo m
+    // ??? for odd e multiply by b once more
+    return h;
+}
+```
+
+[learned.de]
+**Schnelles Potenzieren** (square and multiply) braucht für e = 2147483647 nur 31 Ebenen statt zwei Milliarden Multiplikationen. Die Rekursionstiefe ist die Zahl der Binärziffern von e, wie in der Aufgabe davor.
+
+Damit hast du Kapitel 8 geschafft. Was du in Setzwerk geschrieben hast, hat der Compiler in Befehle übersetzt, die du alle kennst: Register, Sprünge, Stack-Rahmen, Aufrufkonvention. Mehr steckt auch in C nicht, nur ein klügerer Compiler.
+
+Echte Kryptografie: RSA verschlüsselt mit genau dieser Rechnung, potmod(Nachricht, e, n), nur mit Zahlen aus 2048 Bit. Weil das in kein Register passt, rechnen Bibliotheken wie OpenSSL mit langen Zahlen aus vielen 64-Bit-Wörtern, und sie achten darauf, dass jeder Schritt gleich lang dauert, damit die Laufzeit keinen Schlüssel verrät.
+
+[learned.en]
+**Fast exponentiation** (square and multiply) needs only 31 levels for e = 2147483647 instead of two billion multiplications. The recursion depth is the number of binary digits of e, as in the task before.
+
+With that you finished chapter 8. What you wrote in Setzwerk the compiler turned into instructions you all know: registers, jumps, stack frames, the calling convention. There is nothing more in C either, only a cleverer compiler.
+
+Real cryptography: RSA encrypts with exactly this computation, potmod(message, e, n), just with 2048-bit numbers. Because they fit into no register, libraries such as OpenSSL compute with long numbers made of many 64-bit words, and they make sure every step takes the same time so the running time gives no key away.
+
+[start]
+// potmod(b, e, m): b hoch e modulo m. b in r0, e in r1, m in r2, Ergebnis in r0.
+fn potmod(b, e, m) {
+    return 0;
+}
+
+[reference]
+// Schnelles Potenzieren: e halbieren, Ergebnis quadrieren.
+fn potmod(b, e, m) {
+    if (e == 0) { return 1 % m; }
+    var h = potmod(b, e / 2, m);
+    h = h * h % m;
+    if (e % 2 == 1) { h = h * (b % m) % m; }
+    return h;
+}
+
+[test]
+name = beispiel
+call = potmod
+reg r0 = 3
+reg r1 = 13
+reg r2 = 7
+expect_reg r0 = 3
+
+[test]
+name = hoch-null
+call = potmod
+reg r0 = 5
+reg r1 = 0
+reg r2 = 13
+expect_reg r0 = 1
+
+[test]
+name = modul-eins
+call = potmod
+reg r0 = 9
+reg r1 = 4
+reg r2 = 1
+expect_reg r0 = 0
+
+[test]
+name = gross
+call = potmod
+reg r0 = 46339
+reg r1 = 2147483647
+reg r2 = 46340
+expect_reg r0 = 46339
+
+[test]
+name = verdeckt-1
+hidden = yes
+call = potmod
+reg r0 = 2
+reg r1 = 10
+reg r2 = 1000
+expect_reg r0 = 24
+seed = 8510
+
+[test]
+name = verdeckt-2
+hidden = yes
+call = potmod
+reg r0 = 2
+reg r1 = 30
+reg r2 = 46337
+expect_reg r0 = 20860
+seed = 8511
+
+[test]
+name = verdeckt-3
+hidden = yes
+call = potmod
+reg r0 = 7
+reg r1 = 1
+reg r2 = 11
+expect_reg r0 = 7
+seed = 8512
+
+[test]
+name = verdeckt-4
+hidden = yes
+call = potmod
+reg r0 = 0
+reg r1 = 5
+reg r2 = 9
+expect_reg r0 = 0
+seed = 8513
+
+[test]
+name = verdeckt-5
+hidden = yes
+call = potmod
+reg r0 = 12
+reg r1 = 3
+reg r2 = 5
+expect_reg r0 = 3
+seed = 8514
+
+[test]
+name = verdeckt-6
+hidden = yes
+call = potmod
+reg r0 = 10
+reg r1 = 9
+reg r2 = 46340
+expect_reg r0 = 29140
+seed = 8515
+
+[test]
+name = verdeckt-7
+hidden = yes
+call = potmod
+reg r0 = 46339
+reg r1 = 2
+reg r2 = 46340
+expect_reg r0 = 1
+seed = 8516
+
+[test]
+name = verdeckt-8
+hidden = yes
+call = potmod
+reg r0 = 3
+reg r1 = 100
+reg r2 = 101
+expect_reg r0 = 1
+seed = 8517
+
+[test]
+name = verdeckt-9
+hidden = yes
+call = potmod
+reg r0 = 123
+reg r1 = 456
+reg r2 = 789
+expect_reg r0 = 699
+seed = 8518
+
+[test]
+name = verdeckt-10
+hidden = yes
+call = potmod
+reg r0 = 2
+reg r1 = 1000000
+reg r2 = 999
+expect_reg r0 = 160
+seed = 8519
+
+[test]
+name = verdeckt-11
+hidden = yes
+call = potmod
+reg r0 = 17
+reg r1 = 65537
+reg r2 = 3233
+expect_reg r0 = 908
+seed = 8520
+
+[test]
+name = verdeckt-12
+hidden = yes
+call = potmod
+reg r0 = 100
+reg r1 = 2147483646
+reg r2 = 9973
+expect_reg r0 = 6048
+seed = 8521

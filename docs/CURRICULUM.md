@@ -1,4 +1,4 @@
-# Curriculum v1 (30 levels, 8 chapters)
+# Curriculum v1 (35 levels, 9 chapters)
 
 Binding for everyone who writes levels. The machine is defined in [ISA.md](ISA.md); instruction and
 system call names there take precedence. The level file format is in [LEVELS.md](LEVELS.md).
@@ -92,6 +92,19 @@ For upper secondary students, first-year students and teachers: no account, no d
 | 7.2 [D] | Nach dem Freigeben / After Free | Access after free silently returns garbage. | Removes negative nodes but reads `next` only after `FREE` (which now holds 0xDDDDDDDD) → later crash with `fault.out_of_range`. `heap_check = off`. | I/O + heap empty | fill patterns, heap map, back to the last change | 4 | 26 |
 | 7.3 [F] | Sortiert einfügen / Sorted Insert | Pointer work including the head special case. | Read numbers until 0, insert them sorted, print, free. | I/O + heap empty | combination | 5 | 32 |
 
+## Chapter 8 – Setzwerk (Setzwerk)
+
+The player writes [Setzwerk](SETZWERK.md), a small C-like language, and reads the generated assembly
+next to it (`language = setz`). Each level makes one translation pattern visible.
+
+| ID | Title DE / EN | Learning goal | Task | Test | New | Diff | Ref |
+|---|---|---|---|---|---|---|---|
+| 8.1 | Quersumme / Digit Sum | A high-level loop is labels, `cmp` and jumps. | Read numbers until 0, print the digit sum of each. | I/O | `while`, `%`, `/`, `var` in a frame | 2 | 36 |
+| 8.2 | Größter gemeinsamer Teiler / Greatest Common Divisor | The compiler writes prologue and epilogue and keeps the ABI. | Function `ggt(a, b)` (function test). | function test + ABI | parameters in the frame | 2 | 22 |
+| 8.3 | Primzahlen / Prime Numbers | Early `return` jumps to the epilogue; calls in a loop. | Read n, print all primes up to n. | I/O | `return` in a loop, function result as condition | 3 | 55 |
+| 8.4 | Binär rückwärts gedacht / Binary, Thought Backwards | Recursion keeps values in frames. | Read n, print it in binary with `putc`. | text output | `putc`, characters as numbers | 3 | 34 |
+| 8.5 [F] | Potenz modulo / Power Modulo | Square and multiply; depth = number of bits. | Function `potmod(b, e, m)` (function test). | function test + ABI | three arguments, `%` after every product | 4 | 51 |
+
 ## Didactic curve (manual terms introduced before each chapter)
 
 | Ch. | Terms | Steep point | Countermeasure |
@@ -104,6 +117,7 @@ For upper secondary students, first-year students and teachers: no account, no d
 | 5 | stack, push/pop, call/ret, return address, calling convention, register pressure | 5.4: Bresenham | C code in the text, `pixel` given |
 | 6 | frame, fp, prologue/epilogue, local variables, recursion tree, stack overflow | 6.1: frames | stack view labels frames |
 | 7 | heap vs. stack, lifetime, pointers, NULL, memory leak, use after free, double free | 7.3: head | C template; "pointer to pointer" only in hint 3 |
+| 8 | high-level language, compiler, generated code, inlining, ABI | 8.1: new language | manual topic "Setzwerk", source line mirrored while stepping |
 
 Principle for chapter finals: what is tested is the **translation** into assembly, not inventing the
 algorithm, so the C code is part of the task text (4.4, 5.4, 6.4, 7.3).

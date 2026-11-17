@@ -40,3 +40,4 @@ sess_check
 sess_run_tests
 sess_reference_screen
 sess_digest
+setz_compile

@@ -1,0 +1,12 @@
+// && and || evaluate the right side only if needed.
+fn laut(x) {
+    print(x);
+    return x;
+}
+
+fn main() {
+    print(laut(0) && laut(1));
+    print(laut(2) || laut(3));
+    print(laut(4) && laut(5));
+    print(laut(0) || laut(0));
+}

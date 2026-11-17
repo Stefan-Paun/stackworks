@@ -4,6 +4,7 @@
 //! error.
 
 mod args;
+mod compile_cmd;
 mod fuzz;
 mod levels_cmds;
 mod messages;
@@ -27,6 +28,14 @@ const COMMANDS: &[CommandSpec] = &[
         name: "asm",
         usage: "asm <file.s> [-o out.img]",
         about: "Assemble a source file and write the memory image.",
+        options: &[opt("-o", true, false)],
+        min_positional: 1,
+        max_positional: 1,
+    },
+    CommandSpec {
+        name: "compile",
+        usage: "compile <file.sz> [-o out.s]",
+        about: "Compile a Setzwerk program to commented assembly (docs/SETZWERK.md).",
         options: &[opt("-o", true, false)],
         min_positional: 1,
         max_positional: 1,
@@ -143,6 +152,7 @@ fn run(args: &[String], out: &mut dyn Write, err: &mut dyn Write) -> u8 {
         },
         "asm" => program_cmds::cmd_asm(&parsed, out, err),
         "dis" => program_cmds::cmd_dis(&parsed, out, err),
+        "compile" => compile_cmd::cmd_compile(&parsed, out, err),
         "run" => program_cmds::cmd_run(&parsed, out, err),
         "check-levels" => levels_cmds::cmd_check_levels(&parsed, out, err),
         "pack-levels" => levels_cmds::cmd_pack_levels(&parsed, out, err),
@@ -223,6 +233,7 @@ mod tests {
             &["asm", "does-not-exist.s"][..],
             &["dis", "does-not-exist.img"],
             &["run", "does-not-exist.s"],
+            &["compile", "does-not-exist.sz"],
         ] {
             let (code, _, err) = call(args);
             assert_eq!(code, 1, "{args:?}");

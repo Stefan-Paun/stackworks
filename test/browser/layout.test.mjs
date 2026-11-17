@@ -119,7 +119,7 @@ test('damaged localStorage: the page still starts and says so', T, async () => {
   };
   const app = await openApp(ctx, '/stapelwerk/#/', { storage });
   try {
-    await app.until(`document.querySelectorAll('.station').length === 30`, 'plan');
+    await app.until(`document.querySelectorAll('.station').length === 35`, 'plan');
     await app.until(`/beschädigt/.test(document.getElementById('live').textContent)`, 'damage announced');
     assert.equal(await app.evaluate('document.documentElement.dataset.theme ?? null'), null, 'garbage theme ignored');
     await app.goto('/stapelwerk/#/level/2-2-bis-zur-null');
@@ -136,7 +136,7 @@ test('damaged localStorage: the page still starts and says so', T, async () => {
   try {
     await app2.until(`document.querySelector('.ed-text')?.value.includes('Bis zur Null')`, 'start code instead of the bad code');
     await app2.goto('/stapelwerk/#/');
-    await app2.until(`document.querySelectorAll('.station').length === 30`, 'plan');
+    await app2.until(`document.querySelectorAll('.station').length === 35`, 'plan');
     assert.equal(await app2.evaluate(`document.getElementById('unlock-all').checked`), false);
     assert.equal(await app2.evaluate(`document.querySelectorAll('.station.is-solved').length`), 0);
     assert.deepEqual(app2.errors, []);

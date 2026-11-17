@@ -1,0 +1,14 @@
+var zaehler = 10;
+var minus = -5;
+
+fn weiter() {
+    zaehler = zaehler + 1;
+    return zaehler;
+}
+
+fn main() {
+    print(weiter());
+    print(weiter());
+    print(zaehler);
+    print(minus);
+}

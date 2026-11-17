@@ -153,7 +153,11 @@ pub fn parse_manifest(src: &str) -> Result<Manifest, Vec<String>> {
                 continue;
             };
             let parsed = rest.trim_start().split_once(':').and_then(|(n, titles)| {
-                let number = n.trim().parse::<u32>().ok().filter(|n| *n <= 7)?;
+                let number = n
+                    .trim()
+                    .parse::<u32>()
+                    .ok()
+                    .filter(|n| *n <= super::MAX_CHAPTER)?;
                 let (de, en) = titles.split_once('|')?;
                 let (de, en) = (de.trim(), en.trim());
                 (!de.is_empty() && !en.is_empty()).then(|| Chapter {
@@ -168,7 +172,8 @@ pub fn parse_manifest(src: &str) -> Result<Manifest, Vec<String>> {
                 }
                 Some(c) => m.chapters.push(c),
                 None => errors.push(format!(
-                    "line {no}: expected '# chapter N: German title | English title' with N in 0..7"
+                    "line {no}: expected '# chapter N: German title | English title' with N in 0..{}",
+                    super::MAX_CHAPTER
                 )),
             }
             continue;
@@ -222,6 +227,7 @@ pub fn index_json(chapters: &[Chapter], levels: &[Level]) -> String {
         super::write_lang_pair(&mut w, "title", &l.title_de, &l.title_en);
         super::write_lang_pair(&mut w, "card", &l.card_de, &l.card_en);
         w.field_bool("mobile", l.mobile);
+        w.field_str("language", l.language.as_str());
         w.end_object();
     }
     w.end_array();

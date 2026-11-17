@@ -1,0 +1,9 @@
+fn binaer(n) {
+    if (n > 1) { binaer(n >> 1); }
+    putc('0' + (n & 1));
+}
+
+fn main() {
+    binaer(37);
+    putc(10);
+}

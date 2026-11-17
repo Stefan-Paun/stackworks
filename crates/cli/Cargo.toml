@@ -14,3 +14,5 @@ path = "src/main.rs"
 
 [dependencies]
 stapelwerk-core = { path = "../core" }
+
+stapelwerk-setz = { path = "../setz" }

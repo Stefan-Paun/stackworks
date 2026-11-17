@@ -1,0 +1,10 @@
+// Level 2-2: sum of all numbers before the 0.
+fn main() {
+    var summe = 0;
+    var x = read();
+    while (x != 0) {
+        summe = summe + x;
+        x = read();
+    }
+    print(summe);
+}

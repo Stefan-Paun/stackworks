@@ -1,0 +1,12 @@
+fn main() {
+    print(1 << 31);
+    print(-16 >> 2);
+    var k = 33;
+    print(1 << k);        // shift count & 31
+    print(0x80000000 >> 31);
+    print(5 & 3);
+    print(5 | 3);
+    print(5 ^ 3);
+    print(~0);
+    print(0xFFFF0000 & 0x00FFFF00);
+}

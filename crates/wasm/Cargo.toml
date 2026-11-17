@@ -15,3 +15,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 stapelwerk-core = { path = "../core" }
+stapelwerk-setz = { path = "../setz" }

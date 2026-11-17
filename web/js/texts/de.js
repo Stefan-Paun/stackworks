@@ -38,7 +38,7 @@ export default {
   'chapter.7': 'Heap und Listen',
 
   'plan.title': 'Kapitelplan',
-  'plan.lede': 'Dreißig Rätsel auf einer kleinen 32-Bit-Maschine, von Registern bis zum Heap. Jedes Level lehrt, was ein echter Prozessor und ein C-Compiler tun.',
+  'plan.lede': 'Fünfunddreißig Rätsel auf einer kleinen 32-Bit-Maschine, von Registern bis zum Heap und zur eigenen Sprache Setzwerk. Jedes Level lehrt, was ein echter Prozessor und ein C-Compiler tun.',
   'plan.continue': 'Weiter mit {num} {title}',
   'plan.solved': '{done} von {total} gelöst',
   'plan.unlockAll': 'Alles freischalten',
@@ -568,4 +568,93 @@ Die CPU ist erfunden. Sie hat kein Pipeline- und kein Cache-Modell. Was ein Leve
   'abi.bad_handle': 'Interner Fehler: ungültiger Verweis.',
   'abi.bad_arg': 'Interner Fehler: ungültiges Argument.',
   'abi.not_assembled': 'Erst assemblieren.',
+
+  // Setzwerk (Compiler-Ansicht und Kapitel 8)
+  'nav.setzwerk': 'Setzwerk',
+  'chapter.8': 'Setzwerk',
+  'setz.title': 'Setzwerk',
+  'setz.intro': 'Schreib in Setzwerk, einer kleinen Sprache wie C. Der Compiler macht daraus kommentierten Assembler, den du rechts daneben liest und auf derselben Maschine ausführst wie alles andere: Schritt für Schritt, mit Stack und Registern. Eingaben für read() tippst du in die Konsole.',
+  'setz.ex.hello': 'Hallo',
+  'setz.ex.hello.note': 'Zeichen und Zahlen ausgeben',
+  'setz.ex.fak': 'Fakultät',
+  'setz.ex.fak.note': 'Rekursion mit Stack-Rahmen',
+  'setz.ex.collatz': 'Collatz',
+  'setz.ex.collatz.note': 'liest deine Zahlen und wartet auf Eingabe',
+  'setz.ex.args': 'Sechs Argumente',
+  'setz.ex.args.note': 'Register und Stack bei einem Aufruf',
+  'setz.codeTitle': 'Setzwerk und Assembler',
+  'setz.srcTitle': 'Setzwerk',
+  'setz.asmTitle': 'Assembler (erzeugt)',
+  'setz.editorLabel': 'Programm (Setzwerk)',
+  'setz.asmLabel': 'Erzeugter Assembler, nur lesen',
+  'setz.asmEmpty': '; Hier erscheint der Assembler, sobald du übersetzt (Strg+Enter).',
+  'setz.summary': 'Fehler beim Übersetzen in Zeile {line}. Die Meldung steht unter dem Setzwerk-Code.',
+  'setz.found.eof': 'das Dateiende',
+  'setz.found.number': 'die Zahl {v}',
+  'setz.found.token': '„{v}“',
+  'setz.what.var': 'einen Variablennamen',
+  'setz.what.fn': 'einen Funktionsnamen',
+  'setz.what.param': 'einen Parameternamen',
+  'setz.what.variable': 'eine Variable',
+  'setz.what.function': 'eine Funktion',
+  'setz.mock': 'Setzwerk braucht den echten Kern (WebAssembly); die Attrappe kann nicht übersetzen.',
+  'setz.bad_number': 'Ungültige Zahl „{text}“ (höchstens 32 Bit).',
+  'setz.bad_char': 'Ungültiges Zeichenliteral. Erlaubt sind ein Zeichen oder \\n, \\t, \\0, \\\\, \\\' zwischen \'…\'.',
+  'setz.unexpected_char': 'Unerwartetes Zeichen „{char}“.',
+  'setz.expected_top': 'Hier erwartet: fn oder var, gefunden: {found}.',
+  'setz.expected_token': 'Hier fehlt „{token}“, gefunden: {found}.',
+  'setz.expected_name': 'Hier erwartet: {what}, gefunden: {found}.',
+  'setz.too_deep': 'Zu tief verschachtelt (mehr als {max} Ebenen).',
+  'setz.global_not_constant': 'Eine globale Variable braucht eine feste Zahl als Startwert, gefunden: {found}.',
+  'setz.missing_brace': 'Vor dem Dateiende fehlt eine „}“.',
+  'setz.expected_expr': 'Hier erwartet: ein Ausdruck, gefunden: {found}.',
+  'setz.reserved_name': 'Der Name „{name}“ ist im Assembler schon vergeben (Register, Befehl, Systemaufruf oder Konstante). Nimm für {what} einen anderen.',
+  'setz.duplicate': '„{name}“ ist zweimal definiert.',
+  'setz.main_params': 'main hat keine Parameter.',
+  'setz.too_many_params': 'Mehr als {max} Parameter.',
+  'setz.duplicate_param': 'Der Parameter „{name}“ kommt zweimal vor.',
+  'setz.not_a_variable': '„{name}“ ist eine Funktion, keine Variable.',
+  'setz.unknown_variable': 'Unbekannte Variable „{name}“ (mit var anlegen).',
+  'setz.too_many_locals': 'Mehr als {max} lokale Variablen in einer Funktion.',
+  'setz.already_declared': '„{name}“ gibt es in diesem Block schon.',
+  'setz.is_function_name': '„{name}“ ist schon der Name einer Funktion.',
+  'setz.break_outside_loop': 'break oder continue außerhalb einer Schleife.',
+  'setz.not_a_function': '„{name}“ ist eine Variable, keine Funktion.',
+  'setz.unknown_function': 'Unbekannte Funktion „{name}“.',
+  'setz.arity': '„{name}“ nimmt {expected} Argument(e), hier sind es {given}.',
+  'dbg.compileTest': 'Übersetzen & testen',
+  'dbg.compile': 'Übersetzen',
+  'dbg.compileShort': 'Bauen',
+  'notice.compiled': 'Übersetzt und assembliert. Schritt oder Lauf startet das Programm.',
+  'live.compiled': 'Übersetzt.',
+  'live.setzError': 'Übersetzungsfehler in Zeile {line}: {text}',
+  'manual.setzwerk.title': 'Setzwerk',
+  'manual.setzwerk.body': `**Setzwerk** ist eine kleine Sprache wie C. Der Compiler übersetzt sie in kommentierten Assembler für diese Maschine. Es gibt nur ganze Zahlen (32 Bit, mit Vorzeichen).
+
+\`\`\`
+// Kommentar bis zum Zeilenende
+var zaehler = 0;          // globale Variable
+
+fn quadrat(x) {           // Funktion mit Parameter
+    return x * x;
+}
+
+fn main() {               // hier startet das Programm
+    var n = read();       // Zahl aus der Eingabe
+    while (n > 0) {
+        print(quadrat(n)); // Zahl ausgeben
+        n = n - 1;
+    }
+    putc('\\n');           // ein Zeichen ausgeben
+}
+\`\`\`
+
+- Anweisungen: \`var\`, Zuweisung \`=\`, \`if\` / \`else if\` / \`else\`, \`while\`, \`break\`, \`continue\`, \`return\`, \`print(…)\`, \`putc(…)\`.
+- Rechnen: \`+ - * / %\`, Bits \`& | ^ ~ << >>\`, Vergleiche \`< <= > >= == !=\` (Ergebnis 1 oder 0), Logik \`&& || !\` mit Kurzschluss.
+- Zahlen: \`42\`, \`0x2A\`, \`0b101010\`, Zeichen \`'A'\`. Überlauf rechnet modulo 2³², wie die Maschine.
+- Ohne \`main\` ist das Programm eine Sammlung von Funktionen: So rufen Funktionstests sie direkt auf.
+
+Der Compiler hält die [Aufrufkonvention](handbuch:aufruf) ein: Argumente 1–4 in r0–r3, weitere über den Stack, das Ergebnis in r0. Jede Funktion bekommt einen Stack-Rahmen; Parameter und Variablen liegen bei \`[fp - 4]\`, \`[fp - 8]\` …
+
+Rechts neben deinem Code steht der erzeugte Assembler, jede Setzwerk-Zeile als Kommentar \`; Zeile N: …\` darüber. Schritt, Lauf und Haltepunkte arbeiten auf dem Assembler; die aktuelle Setzwerk-Zeile wird links mit markiert. Zum freien Ausprobieren gibt es oben in der Navigation die Ansicht **Setzwerk**.`,
 };

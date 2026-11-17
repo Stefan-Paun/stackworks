@@ -1,0 +1,7 @@
+// in: 3 4
+fn main() {
+    var a = read();
+    var b = read();
+    print(a + b);
+    print(a - b);
+}

@@ -1,0 +1,193 @@
+[level]
+id = 8-4-binaer
+version = 1
+chapter = 8
+order = 4
+kind = normal
+language = setz
+title.de = Binär rückwärts gedacht
+title.en = Binary, Thought Backwards
+card.de = Rekursion dreht die Reihenfolge der Ziffern um, ganz ohne Speicher.
+card.en = Recursion turns the order of the digits around without any memory.
+budget = 100000
+seed = 8401
+mobile = no
+
+[text.de]
+Lies eine Zahl n (0 ≤ n ≤ 2147483647) und gib sie im **Binärsystem** als Text aus, gefolgt von einem Zeilenumbruch. Ein Zeichen gibst du mit `putc(…)` aus, zum Beispiel `putc('1')` oder `putc('\n')`. Keine führenden Nullen; 0 wird als `0` ausgegeben.
+
+Beispiel: n = 13 → `1101` und ein Zeilenumbruch.
+
+[text.en]
+Read a number n (0 ≤ n ≤ 2147483647) and output it in **binary** as text, followed by a line break. You output one character with `putc(…)`, for example `putc('1')` or `putc('\n')`. No leading zeros; 0 is output as `0`.
+
+Example: n = 13 → `1101` and a line break.
+
+[hint.de]
+`n % 2` ist die **letzte** Binärziffer, `n / 2` der Rest davor. Ausgeben musst du aber zuerst die **erste** Ziffer.
+---
+Eine rekursive Funktion löst das: Erst kümmert sie sich um alles vor der letzten Ziffer (`n / 2`), erst danach gibt sie die letzte Ziffer aus. `'0' + 1` ist das Zeichen `'1'`.
+---
+```
+fn bin(n) {
+    // ??? wenn n > 1: zuerst bin(n / 2)
+    putc('0' + n % 2);
+}
+
+fn main() {
+    bin(read());
+    // ??? Zeilenumbruch
+}
+```
+
+[hint.en]
+`n % 2` is the **last** binary digit, `n / 2` the rest in front of it. But you have to output the **first** digit first.
+---
+A recursive function solves this: first it handles everything in front of the last digit (`n / 2`), only then does it output the last digit. `'0' + 1` is the character `'1'`.
+---
+```
+fn bin(n) {
+    // ??? if n > 1: first bin(n / 2)
+    putc('0' + n % 2);
+}
+
+fn main() {
+    bin(read());
+    // ??? line break
+}
+```
+
+[learned.de]
+Die Rekursion hat sich die Ziffern gemerkt, ohne dass du ein Feld gebraucht hast: Jede Ziffer wartet in ihrem eigenen **Stack-Rahmen**, bis der Aufruf darüber fertig ist. Für 2147483647 liegen 31 Rahmen übereinander. Schau dir das in der Stack-Ansicht mit einem Haltepunkt auf `putc` an.
+
+`putc('0' + n % 2)` wird rechts zu `add r0, r0, r1` und `sys WRITE_CHAR`. Zeichen sind für die Maschine nur Zahlen, `'0'` ist 48.
+
+So arbeitet auch `printf("%d")` in C: Ziffern entstehen von hinten, die Ausgabe braucht sie von vorne. Die C-Bibliothek schreibt sie dafür rückwärts in einen kleinen Puffer.
+
+[learned.en]
+The recursion remembered the digits without an array: every digit waits in its own **stack frame** until the call above it is done. For 2147483647 there are 31 frames on top of each other. Look at it in the stack view with a breakpoint on `putc`.
+
+`putc('0' + n % 2)` becomes `add r0, r0, r1` and `sys WRITE_CHAR` on the right. To the machine, characters are just numbers, `'0'` is 48.
+
+That is also how `printf("%d")` works in C: digits are produced from the back, the output needs them from the front. The C library writes them backwards into a small buffer for that.
+
+[start]
+// Binär: lies n und gib n im Binärsystem aus, dann einen Zeilenumbruch.
+fn main() {
+}
+
+[reference]
+// Erst alles vor der letzten Ziffer, dann die letzte Ziffer.
+fn bin(n) {
+    if (n > 1) { bin(n / 2); }
+    putc('0' + n % 2);
+}
+
+fn main() {
+    bin(read());
+    putc('\n');
+}
+
+[test]
+name = dreizehn
+in = 13
+out_text = "1101\n"
+
+[test]
+name = null
+in = 0
+out_text = "0\n"
+
+[test]
+name = eins
+in = 1
+out_text = "1\n"
+
+[test]
+name = gross
+in = 2147483647
+out_text = "1111111111111111111111111111111\n"
+
+[test]
+name = verdeckt-1
+hidden = yes
+in = 2
+out_text = "10\n"
+
+[test]
+name = verdeckt-2
+hidden = yes
+in = 3
+out_text = "11\n"
+
+[test]
+name = verdeckt-3
+hidden = yes
+in = 4
+out_text = "100\n"
+
+[test]
+name = verdeckt-4
+hidden = yes
+in = 5
+out_text = "101\n"
+
+[test]
+name = verdeckt-5
+hidden = yes
+in = 8
+out_text = "1000\n"
+
+[test]
+name = verdeckt-6
+hidden = yes
+in = 10
+out_text = "1010\n"
+
+[test]
+name = verdeckt-7
+hidden = yes
+in = 255
+out_text = "11111111\n"
+
+[test]
+name = verdeckt-8
+hidden = yes
+in = 256
+out_text = "100000000\n"
+
+[test]
+name = verdeckt-9
+hidden = yes
+in = 1000
+out_text = "1111101000\n"
+
+[test]
+name = verdeckt-10
+hidden = yes
+in = 65535
+out_text = "1111111111111111\n"
+
+[test]
+name = verdeckt-11
+hidden = yes
+in = 1073741824
+out_text = "1000000000000000000000000000000\n"
+
+[test]
+name = verdeckt-12
+hidden = yes
+in = 123456789
+out_text = "111010110111100110100010101\n"
+
+[test]
+name = verdeckt-13
+hidden = yes
+in = 6
+out_text = "110\n"
+
+[test]
+name = verdeckt-14
+hidden = yes
+in = 7
+out_text = "111\n"

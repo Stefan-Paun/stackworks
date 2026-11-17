@@ -30,7 +30,7 @@ test('level 2.2: reference solution solves it, result shows, progress survives a
     await app.reload();
     await app.until(`document.querySelector('.ed-text')?.value === ${JSON.stringify(ref)}`, 'saved code after reload');
     await app.goto('/stapelwerk/#/');
-    await app.until(`document.querySelectorAll('.station').length === 30`, 'plan');
+    await app.until(`document.querySelectorAll('.station').length === 35`, 'plan');
     // 2.2 is still locked (chapters 0 and 1 are open), but it is marked as solved.
     assert.equal(await app.evaluate(`[...document.querySelectorAll('.station')].find((s) => s.querySelector('.st-num').textContent === '2.2').classList.contains('is-solved')`), true);
     assert.match(await app.evaluate(`document.querySelector('.plan-count').textContent`), /^1\b/);
@@ -95,7 +95,7 @@ test('level 0.2 with the keyboard only (Tab, Space, Enter, shortcuts)', T, async
     throw new Error(`Tab never reached ${what}`);
   };
   try {
-    await app.until(`document.querySelectorAll('.station').length === 30`, 'plan');
+    await app.until(`document.querySelectorAll('.station').length === 35`, 'plan');
     // 0.2 is locked until 0.1 is solved: switch on "unlock everything" with the keyboard.
     await tabTo(`a.id === 'unlock-all'`, 'the unlock switch');
     await app.press(' ');

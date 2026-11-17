@@ -1,0 +1,15 @@
+// Level 6-4: the C code from the task, almost word for word.
+fn hanoi(n, von, nach, ueber) {
+    if (n == 0) { return; }
+    hanoi(n - 1, von, ueber, nach);
+    print(von);
+    print(nach);
+    hanoi(n - 1, ueber, nach, von);
+}
+
+fn main() {
+    var n = read();
+    var von = read();
+    var nach = read();
+    hanoi(n, von, nach, 6 - von - nach);
+}

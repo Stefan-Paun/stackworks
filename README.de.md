@@ -2,7 +2,7 @@
 
 **Assembler-Rätsel im Browser, auf einer eigenen kleinen 32-Bit-CPU.**
 
-Dreißig Rätsel in acht Kapiteln führen vom Ändern eines einzigen Registers bis zu verketteten Listen auf dem Heap. Du schreibst Assembler, lässt ihn gegen Tests laufen und gehst ihn in einem Debugger durch, der auch rückwärts kann. Jedes Level endet damit, was ein echter x86-, ARM- oder RISC-V-Prozessor und ein C-Compiler in derselben Lage tun.
+Fünfunddreißig Rätsel in neun Kapiteln führen vom Ändern eines einzigen Registers bis zu verketteten Listen auf dem Heap und weiter zu **Setzwerk**, einer kleinen Sprache wie C, deren Compiler dir den erzeugten Assembler zeigt. Du schreibst Assembler, lässt ihn gegen Tests laufen und gehst ihn in einem Debugger durch, der auch rückwärts kann. Jedes Level endet damit, was ein echter x86-, ARM- oder RISC-V-Prozessor und ein C-Compiler in derselben Lage tun.
 
 [English version → README.md](README.md)
 
@@ -28,6 +28,7 @@ Ein Kapitel öffnet sich, sobald die Pflicht-Levels der Kapitel davor gelöst si
 | 5 · Stack und Unterprogramme | Rückwärts · Pixel als Funktion · Der vergessene Pop · Linie | push/pop, `call`/`ret`, Rücksprungadresse, Aufrufkonvention, caller- und callee-saved |
 | 6 · Rekursion | Fakultät · Falscher Fibonacci · Flutfüllung · Türme von Hanoi | Stack-Rahmen, Rahmenzeiger, Prolog und Epilog, Rekursionstiefe, Stack-Überlauf |
 | 7 · Heap und Listen | Kettenglieder · Nach dem Freigeben · Sortiert einfügen | `ALLOC`/`FREE`, Zeiger, Nullzeiger, Speicherleck, Zugriff nach dem Freigeben |
+| 8 · Setzwerk | Quersumme · Größter gemeinsamer Teiler · Primzahlen · Binär rückwärts gedacht · Potenz modulo | eine Hochsprache und ihr Compiler: Schleifen, Funktionen und Rekursion neben dem Assembler, der daraus wird |
 
 Sieben Levels sind **Debugging-Levels**: Der Startcode hat einen Fehler, und du findest ihn mit dem Debugger statt durch Raten. Jedes Level hat eine Aufgabe, drei Hinweise (von der Idee bis fast zur Lösung), sichtbare und verdeckte Tests und eine Seite „Was du gerade gelernt hast“. Der ganze Plan mit Lernzielen steht (englisch) in [docs/CURRICULUM.md](docs/CURRICULUM.md).
 
@@ -42,14 +43,15 @@ Sieben Levels sind **Debugging-Levels**: Der Startcode hat einen Fehler, und du 
 | **Bildschirm** | Der 64×64-Bildschirm in drei Ansichten: Ist, Soll und Unterschied (falsche Pixel schraffiert). Zeigst du auf ein Pixel, siehst du Koordinate, Adresse und Farbe. |
 | **Hexdump** | Alle 64 KiB nach Segmenten, als Bytes oder Wörter; die Heap-Füllmuster `CD`/`DD` sind sichtbar. |
 | **Heap-Karte** | Jedes 4-Byte-Stück des Heaps als frei, belegt, freigegeben oder Schutzzone, dazu eine Liste der Blöcke mit der Zeile, die sie angefordert hat. |
-| **Handbuch** | Elf kurze Themen (Register, Befehle, Flags, Zweierkomplement, Speicher, Stack, Aufrufkonvention, Heap, Bildschirm, Systemaufrufe, Debugger), verlinkt aus den Level-Texten. |
+| **Handbuch** | Zwölf kurze Themen (Register, Befehle, Flags, Zweierkomplement, Speicher, Stack, Aufrufkonvention, Heap, Bildschirm, Systemaufrufe, Debugger, Setzwerk), verlinkt aus den Level-Texten. |
 | **Sandkasten** | Ein freies Programm ohne Aufgabe, mit Eingabe während des Laufs und fünf Beispielen. |
+| **Setzwerk** | Eine kleine Sprache wie C ([docs/SETZWERK.md](docs/SETZWERK.md)), im Browser übersetzt: links dein Code, rechts der erzeugte Assembler mit einem Kommentar pro Quellzeile, ausgeführt und gedebuggt auf derselben Maschine, die aktuelle Quellzeile markiert. So spielt man Kapitel 8. |
 | **Teilen-Link** | Ein Sandkasten-Programm reist komprimiert im Link mit. Nichts wird hochgeladen, und ein geöffneter Link startet nie von selbst. |
 | **Ergebnis** | Deine Zyklen und deine Größe im Vergleich zur Referenzlösung, zwei Abzeichen (Kompakt, Flink) und drei Plätze pro Level, um Lösungen aufzuheben. |
 
 <p>
   <img src="docs/img/de/workspace.png" width="49%" alt="Ein Level auf der Arbeitsfläche: Aufgabe, Editor, Debugger, Register und Stack">
-  <img src="docs/img/de/chapters.png" width="49%" alt="Der Kapitelplan mit acht Kapiteln und dreißig Levels">
+  <img src="docs/img/de/chapters.png" width="49%" alt="Der Kapitelplan">
 </p>
 
 <img src="docs/img/de/mobile.png" width="260" alt="Stapelwerk am Handy">

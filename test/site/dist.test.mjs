@@ -167,7 +167,7 @@ test('sw.js: precache list is complete, exists and has a content version', { ski
 test('every level of levels/index.json is in dist and precached', { skip }, () => {
   const index = JSON.parse(read('levels/index.json'));
   const list = Array.isArray(index) ? index : index.levels;
-  assert.equal(list.length, 30);
+  assert.equal(list.length, 35);
   const { precache } = swInfo();
   for (const l of list) {
     const file = l.file ?? `${l.id}.lvl`;

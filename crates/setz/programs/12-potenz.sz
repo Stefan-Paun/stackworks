@@ -1,0 +1,15 @@
+fn potenz(b, e) {
+    var r = 1;
+    while (e > 0) {
+        r = r * b;
+        e = e - 1;
+    }
+    return r;
+}
+
+fn main() {
+    print(potenz(2, 10));
+    print(potenz(3, 5));
+    print(potenz(2, 31));   // wraps around to the smallest i32
+    print(potenz(7, 0));
+}

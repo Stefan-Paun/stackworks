@@ -161,6 +161,12 @@ async function boot() {
         view = await renderWorkspace(app, { sandbox: true, initialCode });
         title = t('sandbox.title');
         if (code && initialCode === null) app.announce(t('sandbox.badLink'));
+      } else if (route.name === 'setzwerk') {
+        const code = route.query.get('code');
+        const initialCode = code ? await decodeSource(code) : null;
+        view = await renderWorkspace(app, { sandbox: true, setz: true, initialCode });
+        title = t('setz.title');
+        if (code && initialCode === null) app.announce(t('sandbox.badLink'));
       } else if (route.name === 'manual') { view = { node: renderManualPage(app, route.params.topic) }; title = t('nav.manual'); }
       else if (route.name === 'about') { view = { node: renderAbout(app) }; title = t('about.title'); }
     } catch (err) {

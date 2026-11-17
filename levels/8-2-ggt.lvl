@@ -1,0 +1,225 @@
+[level]
+id = 8-2-ggt
+version = 1
+chapter = 8
+order = 2
+kind = normal
+language = setz
+title.de = Größter gemeinsamer Teiler
+title.en = Greatest Common Divisor
+card.de = Eine Setzwerk-Funktion, die sich an die Aufrufkonvention hält, ohne dass du daran denkst.
+card.en = A Setzwerk function that follows the calling convention without you thinking about it.
+budget = 100000
+seed = 8201
+mobile = no
+
+[text.de]
+Schreib die Funktion `ggt(a, b)`: Sie gibt den **größten gemeinsamen Teiler** von a und b zurück. Beide sind ≥ 0, nie beide 0, und ggt(a, 0) = a.
+
+Die Tests rufen `ggt` direkt auf, wie in Kapitel 5 und 6: a in r0, b in r1, Ergebnis in r0. Das Programm braucht deshalb kein `main`. Die Tests prüfen auch, dass r4–r7, fp und sp danach unverändert sind. Darum kümmert sich hier der Compiler.
+
+Beispiel: ggt(12, 18) = 6.
+
+[text.en]
+Write the function `ggt(a, b)` (German for gcd): it returns the **greatest common divisor** of a and b. Both are ≥ 0, never both 0, and ggt(a, 0) = a.
+
+The tests call `ggt` directly, as in chapters 5 and 6: a in r0, b in r1, result in r0. That is why the program needs no `main`. The tests also check that r4–r7, fp and sp are unchanged afterwards. Here the compiler takes care of that.
+
+Example: ggt(12, 18) = 6.
+
+[hint.de]
+Euklid: Der ggT von a und b ist derselbe wie der von b und `a % b`. Wenn b 0 ist, ist a das Ergebnis.
+---
+In einer Schleife: Solange b ≠ 0, merk dir `a % b`, setz a auf b und b auf den gemerkten Rest. Ohne Hilfsvariable überschreibst du einen Wert, bevor du ihn gebraucht hast.
+---
+```
+fn ggt(a, b) {
+    while (b != 0) {
+        var r = a % b;
+        // ??? a und b weiterschieben
+    }
+    return a;
+}
+```
+
+[hint.en]
+Euclid: the gcd of a and b is the same as that of b and `a % b`. When b is 0, a is the result.
+---
+In a loop: while b ≠ 0, remember `a % b`, set a to b and b to the remembered remainder. Without a helper variable you overwrite a value before you used it.
+---
+```
+fn ggt(a, b) {
+    while (b != 0) {
+        var r = a % b;
+        // ??? move a and b along
+    }
+    return a;
+}
+```
+
+[learned.de]
+Rechts im Assembler steht der **Prolog** aus Kapitel 6, den du nicht geschrieben hast: `push fp`, `mov fp, sp`, Platz für a, b und r, dann `st r0, [fp - 4]` und `st r1, [fp - 8]`. Am Ende der **Epilog**. Weil der Compiler nur r0, r1, fp und sp benutzt und fp und sp wiederherstellt, hält jede Setzwerk-Funktion die Aufrufkonvention ein.
+
+Genau dafür gibt es Aufrufkonventionen: Code aus verschiedenen Compilern und von Hand passt zusammen, solange alle dieselben Regeln einhalten. In C ist das das **ABI** der Plattform, zum Beispiel System V für x86-64 unter Linux.
+
+Euklids Algorithmus ist über 2000 Jahre alt und steckt heute in RSA: Dort berechnet eine erweiterte Version davon den geheimen Schlüssel.
+
+[learned.en]
+On the right in the assembly is the **prologue** from chapter 6 that you did not write: `push fp`, `mov fp, sp`, room for a, b and r, then `st r0, [fp - 4]` and `st r1, [fp - 8]`. At the end, the **epilogue**. Because the compiler only uses r0, r1, fp and sp and restores fp and sp, every Setzwerk function keeps the calling convention.
+
+That is exactly what calling conventions are for: code from different compilers and code written by hand fit together as long as everybody follows the same rules. In C this is the platform's **ABI**, for example System V for x86-64 on Linux.
+
+Euclid's algorithm is more than 2000 years old and today sits inside RSA: an extended version of it computes the private key.
+
+[start]
+// ggt(a, b): größter gemeinsamer Teiler, a in r0, b in r1, Ergebnis in r0.
+fn ggt(a, b) {
+    return 0;
+}
+
+[reference]
+// Euklid mit Schleife.
+fn ggt(a, b) {
+    while (b != 0) {
+        var r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+[test]
+name = beispiel
+call = ggt
+reg r0 = 12
+reg r1 = 18
+expect_reg r0 = 6
+
+[test]
+name = teilerfremd
+call = ggt
+reg r0 = 17
+reg r1 = 5
+expect_reg r0 = 1
+
+[test]
+name = null
+call = ggt
+reg r0 = 7
+reg r1 = 0
+expect_reg r0 = 7
+
+[test]
+name = null-vorne
+call = ggt
+reg r0 = 0
+reg r1 = 9
+expect_reg r0 = 9
+
+[test]
+name = verdeckt-1
+hidden = yes
+call = ggt
+reg r0 = 1071
+reg r1 = 462
+expect_reg r0 = 21
+seed = 8210
+
+[test]
+name = verdeckt-2
+hidden = yes
+call = ggt
+reg r0 = 5
+reg r1 = 5
+expect_reg r0 = 5
+seed = 8211
+
+[test]
+name = verdeckt-3
+hidden = yes
+call = ggt
+reg r0 = 1
+reg r1 = 1000
+expect_reg r0 = 1
+seed = 8212
+
+[test]
+name = verdeckt-4
+hidden = yes
+call = ggt
+reg r0 = 1000000
+reg r1 = 64
+expect_reg r0 = 64
+seed = 8213
+
+[test]
+name = verdeckt-5
+hidden = yes
+call = ggt
+reg r0 = 2147483646
+reg r1 = 3
+expect_reg r0 = 3
+seed = 8214
+
+[test]
+name = verdeckt-6
+hidden = yes
+call = ggt
+reg r0 = 144
+reg r1 = 89
+expect_reg r0 = 1
+seed = 8215
+
+[test]
+name = verdeckt-7
+hidden = yes
+call = ggt
+reg r0 = 270
+reg r1 = 192
+expect_reg r0 = 6
+seed = 8216
+
+[test]
+name = verdeckt-8
+hidden = yes
+call = ggt
+reg r0 = 36
+reg r1 = 48
+expect_reg r0 = 12
+seed = 8217
+
+[test]
+name = verdeckt-9
+hidden = yes
+call = ggt
+reg r0 = 100
+reg r1 = 75
+expect_reg r0 = 25
+seed = 8218
+
+[test]
+name = verdeckt-10
+hidden = yes
+call = ggt
+reg r0 = 13
+reg r1 = 91
+expect_reg r0 = 13
+seed = 8219
+
+[test]
+name = verdeckt-11
+hidden = yes
+call = ggt
+reg r0 = 2048
+reg r1 = 4096
+expect_reg r0 = 2048
+seed = 8220
+
+[test]
+name = verdeckt-12
+hidden = yes
+call = ggt
+reg r0 = 99991
+reg r1 = 1
+expect_reg r0 = 1
+seed = 8221

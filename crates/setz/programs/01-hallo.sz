@@ -1,0 +1,5 @@
+// Characters with putc.
+fn main() {
+    putc(72); putc(97); putc(108); putc(108); putc(111);
+    putc(10);
+}

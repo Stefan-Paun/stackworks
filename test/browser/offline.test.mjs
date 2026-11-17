@@ -9,7 +9,7 @@ const ctx = useBrowser();
 test('without ?sw=1 no service worker is registered locally', { skip, timeout: 30000 }, async () => {
   const app = await openApp(ctx, '/stapelwerk/#/');
   try {
-    await app.until(`document.querySelectorAll('.station').length === 30`, 'plan');
+    await app.until(`document.querySelectorAll('.station').length === 35`, 'plan');
     assert.equal(await app.evaluate(`navigator.serviceWorker.getRegistrations().then((r) => r.length)`), 0);
   } finally {
     await app.close();
@@ -36,7 +36,7 @@ test('service worker: precache, offline reload, level playable offline', { skip,
     assert.equal(await app.evaluate(`fetch('/stapelwerk/levels/index.json?nocache=' + Math.random(), { cache: 'no-store' }).then(() => 'online', () => 'offline')`), 'online',
       'the service worker answers even with a query string');
     await app.reload();
-    await app.until(`document.querySelectorAll('.station').length === 30`, 'plan offline');
+    await app.until(`document.querySelectorAll('.station').length === 35`, 'plan offline');
     await app.goto('/stapelwerk/?sw=1#/level/2-2-bis-zur-null');
     await app.setCode(referenceOf('2-2-bis-zur-null.lvl'));
     await app.click('.dbg-primary');

@@ -1,6 +1,6 @@
 # Stapelwerk
 
-Assembly puzzle game in the browser: a 32-bit teaching CPU in Rust (zero third-party crates) compiled to WebAssembly, a vanilla-JS interface without bundler or npm packages, 30 levels in German and English. Read `README.md` for the overview and `CONTRIBUTING.md` for the full rules.
+Assembly puzzle game in the browser: a 32-bit teaching CPU in Rust (zero third-party crates) compiled to WebAssembly, a vanilla-JS interface without bundler or npm packages, 35 levels in German and English. Read `README.md` for the overview and `CONTRIBUTING.md` for the full rules.
 
 ## Commands
 

@@ -52,6 +52,7 @@ function normalise(handle, entry) {
     chapter: info.chapter ?? entry?.chapter ?? 0,
     order: info.order ?? entry?.order ?? 1,
     kind: info.kind ?? 'normal',
+    language: info.language ?? entry?.language ?? 'asm',
     tags: info.tags ?? entry?.tags ?? [],
     mobile: Boolean(info.mobile ?? entry?.mobile),
     title: info.title ?? entry?.title ?? { de: info.id, en: info.id },

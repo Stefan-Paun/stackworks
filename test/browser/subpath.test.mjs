@@ -9,7 +9,7 @@ const ctx = useBrowser({ base: '/a/b/c/' });
 test('site works under /a/b/c/ (German and English)', { skip, timeout: 60000 }, async () => {
   const app = await openApp(ctx, '/a/b/c/#/');
   try {
-    await app.until(`document.querySelectorAll('.station').length === 30`, 'plan');
+    await app.until(`document.querySelectorAll('.station').length === 35`, 'plan');
     await app.goto('/a/b/c/#/level/2-2-bis-zur-null');
     await app.setCode(referenceOf('2-2-bis-zur-null.lvl'));
     await app.click('.dbg-primary');

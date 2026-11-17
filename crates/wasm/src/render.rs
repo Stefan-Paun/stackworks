@@ -54,6 +54,36 @@ pub fn assembled(ok: bool, size: u32, diags: &[Diagnostic]) -> String {
     w.finish()
 }
 
+/// `setz_compile`: `{"ok":true,"asm":…}` or `{"ok":false,"error":{key,line,col,args}}`. All
+/// argument values are strings.
+pub fn compiled(res: Result<String, stapelwerk_setz::Error>) -> String {
+    let mut w = JsonWriter::new();
+    w.begin_object();
+    match res {
+        Ok(asm) => {
+            w.field_bool("ok", true);
+            w.field_str("asm", &asm);
+        }
+        Err(e) => {
+            w.field_bool("ok", false);
+            w.key("error");
+            w.begin_object();
+            w.field_str("key", e.key);
+            w.field_uint("line", e.pos.line as u64);
+            w.field_uint("col", e.pos.col as u64);
+            w.key("args");
+            w.begin_object();
+            for (k, v) in &e.args {
+                w.field_str(k, v);
+            }
+            w.end_object();
+            w.end_object();
+        }
+    }
+    w.end_object();
+    w.finish()
+}
+
 /// `level_load` on error: `{ok: false, diagnostics}`.
 pub fn level_error(diags: &[Diagnostic]) -> String {
     let mut w = JsonWriter::new();
