@@ -5,9 +5,9 @@ use crate::lexer::{Tok, Token};
 use crate::{Error, Pos};
 
 /// Maximum nesting of expressions and blocks; keeps the recursion of every stage bounded.
-pub const MAX_DEPTH: u32 = 200;
+pub const MAX_DEPTH: u32 = 64;
 
-/// Binary precedence levels from loosest to tightest.
+/// Binary precedence levels from loosest to tightest (all left-associative).
 const LEVELS: &[&[(&str, BinOp)]] = &[
     &[("||", BinOp::LogOr)],
     &[("&&", BinOp::LogAnd)],
@@ -304,22 +304,34 @@ impl Parser {
         e
     }
 
-    fn binary(&mut self, level: usize) -> Result<Expr, Error> {
-        let Some(ops) = LEVELS.get(level) else {
-            return self.unary();
+    /// The operator at the current token, if it binds at `min_level` or tighter.
+    fn binary_op(&self, min_level: usize) -> Option<(usize, BinOp)> {
+        let Tok::Sym(s) = &self.peek().tok else {
+            return None;
         };
-        let mut lhs = self.binary(level + 1)?;
-        // Every operator in a chain makes the (left-deep) tree one level deeper, so it counts
-        // towards the nesting limit like a parenthesis.
+        LEVELS
+            .iter()
+            .enumerate()
+            .skip(min_level)
+            .find_map(|(lvl, ops)| {
+                ops.iter()
+                    .find(|(text, _)| text == s)
+                    .map(|(_, op)| (lvl, *op))
+            })
+    }
+
+    /// Precedence climbing: parses operators that bind at `min_level` or tighter. Recursion only
+    /// happens for a tighter right operand, so a chain such as `a + b + c` stays flat here.
+    fn binary(&mut self, min_level: usize) -> Result<Expr, Error> {
+        let mut lhs = self.unary()?;
+        // Every operator makes the (left-deep) tree one level deeper, so it counts towards the
+        // nesting limit like a parenthesis.
         let mut chain = 0;
         let result = loop {
-            let t = self.peek().clone();
-            let op = match &t.tok {
-                Tok::Sym(s) => ops.iter().find(|(text, _)| text == s).map(|(_, op)| *op),
-                _ => None,
+            let Some((level, op)) = self.binary_op(min_level) else {
+                break Ok(lhs);
             };
-            let Some(op) = op else { break Ok(lhs) };
-            self.i += 1;
+            let pos = self.next().pos;
             chain += 1;
             if let Err(e) = self.enter() {
                 break Err(e);
@@ -328,7 +340,7 @@ impl Parser {
                 Ok(r) => r,
                 Err(e) => break Err(e),
             };
-            lhs = Expr::Binary(op, Box::new(lhs), Box::new(rhs), t.pos);
+            lhs = Expr::Binary(op, Box::new(lhs), Box::new(rhs), pos);
         };
         for _ in 0..chain {
             self.leave();

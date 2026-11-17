@@ -165,7 +165,7 @@ fn ten_thousand_inputs_without_panic() {
         total += 1;
     }
     // 20 pathological inputs.
-    for n in [10usize, 199, 200, 201, 5000] {
+    for n in [10usize, 63, 64, 65, 5000] {
         check(&format!(
             "fn main() {{ print({}1{}); }}",
             "(".repeat(n),
@@ -197,7 +197,7 @@ fn deep_nesting_is_an_error_not_a_crash() {
     assert!(compile(&long, "x").is_err());
     assert!(
         compile(
-            &format!("fn main() {{ print(1{}); }}", "+1".repeat(150)),
+            &format!("fn main() {{ print(1{}); }}", "+1".repeat(40)),
             "x"
         )
         .is_ok()

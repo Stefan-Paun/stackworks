@@ -207,7 +207,7 @@ panics, whatever the input (tested with 10 000 random and mutated inputs).
 
 | Limit | Value | Why |
 |---|---|---|
-| nesting of expressions and blocks | 200 | the parser is recursive |
+| nesting depth (parentheses, blocks, `if`/`else if`, and each binary operator of one expression) | 64 | parser, code generator and interpreter are recursive |
 | local slots per function | 4000 | offsets must fit `[fp - 32768]` |
 | parameters per function | 64 | |
 | program size | text ≤ 16128 bytes, data ≤ 8192 bytes | the machine's segments; checked by assembling the output |

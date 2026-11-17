@@ -294,7 +294,9 @@ impl Gen<'_> {
             self.ins(&s);
         }
         self.out.push_str(&body);
-        self.ins("mov r0, 0               ; end of the function: return 0");
+        if !matches!(f.body.last(), Some(Stmt::Return(..))) {
+            self.ins("mov r0, 0               ; end of the function: return 0");
+        }
         self.put_label(".exit");
         self.ins("mov sp, fp              ; epilogue");
         self.ins("pop fp");
