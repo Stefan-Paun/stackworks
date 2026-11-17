@@ -16,7 +16,7 @@ async function assertClean(app) {
 test('German start page loads cleanly with the chapter plan and the real core', T, async () => {
   const app = await openApp(ctx, '/stapelwerk/');
   try {
-    await app.until(`document.querySelectorAll('.station').length === 30`, '30 stations');
+    await app.until(`document.querySelectorAll('.station').length === 35`, '35 stations');
     assert.equal(await app.evaluate('document.documentElement.lang'), 'de');
     assert.equal(await app.evaluate(`document.querySelector('.mainnav a[data-route="sandbox"]').textContent`), 'Sandkasten');
     // Fonts, styles and the wasm module all came from the server.

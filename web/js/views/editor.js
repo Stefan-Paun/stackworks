@@ -4,9 +4,11 @@
 import { el, mount } from '../dom.js';
 import { breakpointMark } from '../icons.js';
 
-const PALETTE_TOKENS = ['mov', 'add', 'sub', 'cmp', 'jz', 'jnz', 'jmp', 'sys ', 'push', 'pop', 'call', 'ret', 'halt', 'r0', 'r1', 'r2', ', ', '[', ']', ':', '; '];
+export const PALETTE_TOKENS = ['mov', 'add', 'sub', 'cmp', 'jz', 'jnz', 'jmp', 'sys ', 'push', 'pop', 'call', 'ret', 'halt', 'r0', 'r1', 'r2', ', ', '[', ']', ':', '; '];
 
-export function createEditor({ t, value = '', label, onInput, onToggleBreakpoint, onEscape }) {
+// palette: tokens for the touch palette (default: assembly), or null for none.
+// readonly: a view of generated code (still with gutter, current line and breakpoints).
+export function createEditor({ t, value = '', label, onInput, onToggleBreakpoint, onEscape, palette: tokens = PALETTE_TOKENS, readonly = false }) {
   const gutterInner = el('div', { class: 'ed-gutter-inner' });
   const gutter = el('div', { class: 'ed-gutter', 'aria-hidden': 'true' }, gutterInner);
   const backInner = el('div', { class: 'ed-back-inner' });
@@ -24,10 +26,11 @@ export function createEditor({ t, value = '', label, onInput, onToggleBreakpoint
     'aria-keyshortcuts': 'Control+Enter Escape',
   });
   area.value = value;
+  area.readOnly = Boolean(readonly);
   const errorsList = el('ul', { class: 'ed-errors', id: errorsId, 'aria-live': 'polite' });
   const body = el('div', { class: 'ed-body' }, back, area);
-  const palette = el('div', { class: 'ed-palette', role: 'group', 'aria-label': t('editor.palette') },
-    PALETTE_TOKENS.map((tok) => el('button', {
+  const palette = tokens && el('div', { class: 'ed-palette', role: 'group', 'aria-label': t('editor.palette') },
+    tokens.map((tok) => el('button', {
       type: 'button',
       class: 'chip mono',
       onclick: () => insert(tok.trim() === tok && /^[a-z]+$/.test(tok) && tok.length > 2 ? `${tok} ` : tok),

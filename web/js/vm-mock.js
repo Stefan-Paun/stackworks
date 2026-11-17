@@ -1237,6 +1237,8 @@ class MockVm {
     return lv ? new MockLevelHandle(lv) : null;
   }
   newSession(handle) { return new Session(handle ? handle.level : null); }
+  // The mock has no compiler: Setzwerk needs the real core.
+  compileSetz() { return { ok: false, error: { key: 'setz.mock', line: 1, col: 1, args: {} } }; }
 }
 
 export async function loadVm() {

@@ -1,6 +1,10 @@
 // The level workspace (and, with sandbox: true, the sandbox): debugger bar,
 // task, editor, registers, stack, screen, console and memory tabs. Owns the
 // Session and turns user actions into VM calls; the panes only render views.
+// Setzwerk mode (setz: true or a level with language = setz): the player writes
+// Setzwerk on the left, the compiled assembly appears read-only on the right and
+// runs on the same machine; the debugger works on the assembly and mirrors the
+// current line into the Setzwerk source.
 import { el, mount, setText } from '../dom.js';
 import { icon } from '../icons.js';
 import { STATUS, STATUS_NAME, REG_NAMES, hex, signed } from '../machine.js';
@@ -17,11 +21,41 @@ import { createHeapmap } from './heapmap.js';
 import { createManualTab } from './manual.js';
 import { renderResult } from './result.js';
 import { createTabs } from './tabs.js';
-import { createSandboxPanel, SANDBOX_EXAMPLES } from './sandbox.js';
+import { createSandboxPanel, SANDBOX_EXAMPLES, SETZ_EXAMPLES } from './sandbox.js';
 
 const RUN_SLICE = 50000;
 const MOBILE_TABS = ['task', 'code', 'regs', 'stack', 'screen', 'console', 'mem'];
 const TUTORIAL_ITEMS = ['step', 'breakpoint', 'run', 'back'];
+const SETZ_PALETTE = ['var', 'fn', 'if', 'else', 'while', 'return', 'read()', 'print(', 'putc(', '{', '}', '(', ')', ';', ' = ', ' == ', ' != ', ' < ', ' % ', '// '];
+// A failed assemble unloads the session's program (Session::assemble); a compile error must
+// leave the machine in exactly that state, so the workspace assembles this invalid line.
+const UNLOAD = '.unload';
+// "; line N:" / "; Zeile N:" comments of the compiler mark the source line of what follows.
+const SETZ_LINE = /^\s*;\s*(?:line|Zeile)\s+(\d+):/;
+
+/** Map from assembly line to Setzwerk line, read from the compiler's comments. */
+export function setzLineMap(asm) {
+  const map = new Map();
+  let cur = null;
+  asm.split('\n').forEach((text, i) => {
+    const m = SETZ_LINE.exec(text);
+    if (m) cur = Number(m[1]);
+    else if (/^;/.test(text)) cur = null; // a comment in column 1 starts a new function or part
+    if (cur !== null) map.set(i + 1, cur);
+  });
+  return map;
+}
+
+/** Text of a Setzwerk compile error ({key, line, col, args}) in the UI language. */
+export function setzErrorText(t, err) {
+  const args = { ...err.args };
+  if ('found' in args) {
+    const v = args.found;
+    args.found = v === '' ? t('setz.found.eof') : /^-?\d+$/.test(v) ? t('setz.found.number', { v }) : t('setz.found.token', { v });
+  }
+  if ('what' in args) args.what = t(`setz.what.${args.what}`);
+  return t(err.key, args);
+}
 
 export function faultText(t, fault) {
   const args = { ...fault.args };
@@ -45,12 +79,13 @@ function diagText(t, d) {
   return text;
 }
 
-export async function renderWorkspace(app, { levelId = null, sandbox = false, initialCode = null } = {}) {
+export async function renderWorkspace(app, { levelId = null, sandbox = false, initialCode = null, setz = false } = {}) {
   const { t, lang, progress } = app;
   const level = sandbox ? null : await app.levels.load(levelId);
   if (!sandbox && !level) return null;
   const { levels } = await app.levels.index();
-  const storeId = sandbox ? 'sandbox' : level.id;
+  const setzMode = setz || level?.language === 'setz';
+  const storeId = sandbox ? (setzMode ? 'setzwerk' : 'sandbox') : level.id;
   const session = app.vm.newSession(level ? level.handle : null);
   const record = () => progress.level(storeId);
   const visibleTests = level ? level.tests.map((x, i) => ({ ...x, index: i })).filter((x) => !x.hidden) : [];
@@ -79,16 +114,19 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     expected: null,
     expectedFor: null,
     hotLine: null,
+    compileError: null,
+    srcOfAsm: new Map(),
+    asmOfSrc: new Map(),
   };
 
   // ------------------------------------------------------------ layout
   const statusChip = el('p', { class: 'status-chip', role: 'status' });
-  const titleText = sandbox ? t('sandbox.title') : level.title[lang] ?? level.title.de;
+  const titleText = sandbox ? t(setzMode ? 'setz.title' : 'sandbox.title') : level.title[lang] ?? level.title.de;
   const head = el('div', { class: 'ws-head' },
     el('nav', { class: 'crumbs', 'aria-label': t('nav.crumbs') },
       el('a', { href: '#/' }, t('nav.plan')),
       el('span', { 'aria-hidden': 'true' }, '/'),
-      el('span', {}, sandbox ? t('nav.sandbox') : t('plan.chapter', { n: level.chapter, title: t(`chapter.${level.chapter}`) }))),
+      el('span', {}, sandbox ? t(setzMode ? 'nav.setzwerk' : 'nav.sandbox') : t('plan.chapter', { n: level.chapter, title: t(`chapter.${level.chapter}`) }))),
     el('h1', { class: 'ws-title', id: 'ws-title', tabindex: '-1' },
       sandbox ? null : el('span', { class: 'ws-num mono' }, `${level.chapter}.${level.order}`),
       titleText),
@@ -108,7 +146,11 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     type: 'button', class: 'btn btn-primary dbg-primary', dataset: { action: 'assembleTest' },
     'aria-keyshortcuts': 'Control+Enter Meta+Enter',
     onclick: () => act('assembleTest'),
-  }, icon(sandbox ? 'assemble' : 'test'), el('span', { class: 'btn-label' }, el('span', { class: 'lbl-long' }, sandbox ? t('dbg.assemble') : t('dbg.assembleTest')), el('span', { class: 'lbl-short', 'aria-hidden': 'true' }, sandbox ? t('dbg.assembleShort') : t('dbg.testShort'))), el('kbd', { 'aria-hidden': 'true' }, t('dbg.modEnter')));
+  }, icon(sandbox ? 'assemble' : 'test'), el('span', { class: 'btn-label' }, el('span', { class: 'lbl-long' }, primaryLabel()), el('span', { class: 'lbl-short', 'aria-hidden': 'true' }, sandbox ? t(setzMode ? 'dbg.compileShort' : 'dbg.assembleShort') : t('dbg.testShort'))), el('kbd', { 'aria-hidden': 'true' }, t('dbg.modEnter')));
+  function primaryLabel() {
+    if (sandbox) return setzMode ? t('dbg.compile') : t('dbg.assemble');
+    return setzMode ? t('dbg.compileTest') : t('dbg.assembleTest');
+  }
   const slider = el('input', { type: 'range', min: 0, max: 0, value: 0, step: 1, class: 'timeline-range', id: 'timeline', 'aria-describedby': 'timeline-out' });
   const sliderOut = el('output', { class: 'timeline-out mono', id: 'timeline-out', for: 'timeline' });
   const timeline = el('div', { class: 'timeline' },
@@ -129,8 +171,11 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
   let taskTabs = null;
   let taskPane;
   if (sandbox) {
-    const panel = createSandboxPanel({ t, getCode: () => editor.value, onLoad: (code) => { editor.value = code; onCode(code); invalidate(); } });
-    taskPane = el('section', { class: 'pane pane-task', 'aria-label': t('sandbox.title') }, panel.node);
+    const panel = createSandboxPanel({
+      t, lang, getCode: () => playerCode(), onLoad: (code) => { input.value = code; onCode(code); invalidate(); },
+      ...(setzMode ? { examples: SETZ_EXAMPLES, texts: 'setz', route: 'setzwerk' } : {}),
+    });
+    taskPane = el('section', { class: 'pane pane-task', 'aria-label': t(setzMode ? 'setz.title' : 'sandbox.title') }, panel.node);
   } else {
     taskTabs = createTabs({
       label: t('task.tabs'),
@@ -148,24 +193,49 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
   const sizeNote = el('span', { class: 'pane-note mono' });
   const notice = el('div', { class: 'notice', role: 'status', hidden: true });
   const saved = record().code;
-  const code = initialCode ?? saved ?? (sandbox ? SANDBOX_EXAMPLES[0].code : level.start);
+  const firstExample = setzMode ? SETZ_EXAMPLES[1].code[lang] ?? SETZ_EXAMPLES[1].code.de : SANDBOX_EXAMPLES[0].code;
+  const code = initialCode ?? saved ?? (sandbox ? firstExample : level.start);
   let saveTimer = 0;
   const onCode = (value) => {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => progress.saveCode(storeId, value), 400);
     renderStatus();
   };
+  // `editor` always holds the assembly the machine runs (in Setzwerk mode read-only and
+  // generated); `input` is the editor the player types into.
   const editor = createEditor({
     t,
-    value: code,
-    label: t('editor.label'),
-    onInput: onCode,
+    value: setzMode ? t('setz.asmEmpty') : code,
+    label: setzMode ? t('setz.asmLabel') : t('editor.label'),
+    onInput: setzMode ? null : onCode,
     onToggleBreakpoint: (line) => toggleBreakpoint(line),
     onEscape: () => stepBtn.focus(),
+    palette: setzMode ? null : undefined,
+    readonly: setzMode,
   });
-  const codePane = el('section', { class: 'pane pane-code', 'aria-labelledby': 'h-code' },
-    el('header', { class: 'pane-head' }, el('h2', { id: 'h-code' }, t('editor.title')), sizeNote),
-    notice, editor.node);
+  const srcEditor = setzMode ? createEditor({
+    t,
+    value: code,
+    label: t('setz.editorLabel'),
+    onInput: onCode,
+    onToggleBreakpoint: (line) => toggleSrcBreakpoint(line),
+    onEscape: () => stepBtn.focus(),
+    palette: SETZ_PALETTE,
+  }) : null;
+  const input = srcEditor ?? editor;
+  const playerCode = () => input.value;
+  const codePane = setzMode
+    ? el('section', { class: 'pane pane-code pane-setz', 'aria-labelledby': 'h-code' },
+      el('header', { class: 'pane-head' }, el('h2', { id: 'h-code' }, t('setz.codeTitle')), sizeNote),
+      notice,
+      el('div', { class: 'setz-split' },
+        el('section', { class: 'setz-side', 'aria-labelledby': 'h-setz-src' },
+          el('h3', { class: 'setz-head', id: 'h-setz-src' }, t('setz.srcTitle')), srcEditor.node),
+        el('section', { class: 'setz-side setz-asm', 'aria-labelledby': 'h-setz-asm' },
+          el('h3', { class: 'setz-head', id: 'h-setz-asm' }, t('setz.asmTitle')), editor.node)))
+    : el('section', { class: 'pane pane-code', 'aria-labelledby': 'h-code' },
+      el('header', { class: 'pane-head' }, el('h2', { id: 'h-code' }, t('editor.title')), sizeNote),
+      notice, editor.node);
 
   // State panes
   const registers = createRegisters({ t, onSetReg: (r, v) => setReg(r, v), onBackToChange: (k, target) => backToChange(k, target) });
@@ -203,7 +273,7 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     el('div', { class: 'ws-col ws-col-a' }, taskPane, codePane),
     el('div', { class: 'ws-col ws-col-b' }, registers.node, stack.node),
     el('div', { class: 'ws-col ws-col-c' }, screen.node, consoleView.node, memPane));
-  const root = el('div', { class: 'ws', dataset: { mode: sandbox ? 'sandbox' : 'level', mtab: 'code' } },
+  const root = el('div', { class: 'ws', dataset: { mode: sandbox ? 'sandbox' : 'level', mtab: 'code', setz: setzMode ? '1' : '0' } },
     head, toolbar, mobileTabs, grid);
 
   function setMobileTab(id) {
@@ -267,9 +337,58 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     }
   }
 
+  // Setzwerk mode: compile first. Returns the assembly, or null after a compile error (the
+  // machine is then unloaded, like after an assembler error).
+  function compile() {
+    const res = app.vm.compileSetz(playerCode(), lang);
+    if (res.ok) {
+      ui.compileError = null;
+      editor.value = res.asm;
+      ui.srcOfAsm = setzLineMap(res.asm);
+      return res.asm;
+    }
+    ui.compileError = res.error;
+    session.assemble(UNLOAD);
+    return null;
+  }
+
+  function mapSourceLines() {
+    ui.asmOfSrc.clear();
+    for (const [asmLine, srcLine] of ui.srcOfAsm) {
+      if (ui.lineToAddr.has(asmLine) && !ui.asmOfSrc.has(srcLine)) ui.asmOfSrc.set(srcLine, asmLine);
+    }
+  }
+
+  function errorAnnouncement() {
+    if (ui.compileError) return t('live.setzError', { line: ui.compileError.line, text: setzErrorText(t, ui.compileError) });
+    return t('live.asmErrors', { count: ui.diagnostics.length });
+  }
+
   function assemble() {
+    if (setzMode) {
+      const asm = compile();
+      if (asm === null) {
+        ui.assembledSource = playerCode();
+        ui.diagnostics = [];
+        ui.hotLine = null;
+        ui.prev = null;
+        ui.result = null;
+        ui.changedRegs = new Set();
+        ui.changedBytes = new Set();
+        ui.lineToAddr.clear();
+        ui.addrToLine.clear();
+        ui.asmOfSrc.clear();
+        const e = ui.compileError;
+        setNotice('error', t('setz.summary', { line: e.line }));
+        srcEditor.setErrors([{ line: e.line, col: e.col, text: setzErrorText(t, e) }]);
+        editor.setErrors([]);
+        setText(sizeNote, '');
+        return false;
+      }
+      srcEditor.setErrors([]);
+    }
     const res = session.assemble(editor.value);
-    ui.assembledSource = editor.value;
+    ui.assembledSource = playerCode();
     ui.diagnostics = res.diagnostics ?? [];
     ui.hotLine = null;
     ui.prev = null;
@@ -277,6 +396,7 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     ui.changedBytes = new Set();
     if (res.ok) {
       rebuildMaps();
+      if (setzMode) mapSourceLines();
       applyBreakpoints();
       setNotice(null);
       resetMachine();
@@ -290,10 +410,10 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
   }
 
   function ensureAssembled() {
-    if (ui.assembledSource === editor.value && session.state().status !== STATUS.NOT_ASSEMBLED) return true;
+    if (ui.assembledSource === playerCode() && session.state().status !== STATUS.NOT_ASSEMBLED) return true;
     const ok = assemble();
     refresh();
-    if (!ok) app.announce(t('live.asmErrors', { count: ui.diagnostics.length }));
+    if (!ok) app.announce(errorAnnouncement());
     return ok;
   }
 
@@ -453,13 +573,22 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     if (session.state().status === STATUS.PAUSED && !ui.running && ui.prev) runPause();
   }
 
-  function toggleBreakpoint(line) {
+  // `shown` is the line number announced (the Setzwerk line when set from the source).
+  function toggleBreakpoint(line, shown = line) {
     if (!ensureAssembled()) return;
-    if (!ui.lineToAddr.has(line)) { app.announce(t('live.noInstr', { line })); return; }
+    if (!ui.lineToAddr.has(line)) { app.announce(t('live.noInstr', { line: shown })); return; }
     if (ui.bpLines.has(line)) ui.bpLines.delete(line); else { ui.bpLines.add(line); tutorial('breakpoint'); }
     applyBreakpoints();
     refresh();
-    app.announce(t(ui.bpLines.has(line) ? 'live.bpOn' : 'live.bpOff', { line }));
+    app.announce(t(ui.bpLines.has(line) ? 'live.bpOn' : 'live.bpOff', { line: shown }));
+  }
+
+  // A breakpoint on a Setzwerk line sits on the first instruction compiled from it.
+  function toggleSrcBreakpoint(srcLine) {
+    if (!ensureAssembled()) return;
+    const asmLine = ui.asmOfSrc.get(srcLine);
+    if (asmLine === undefined) { app.announce(t('live.noInstr', { line: srcLine })); return; }
+    toggleBreakpoint(asmLine, srcLine);
   }
 
   function setReg(reg, value) {
@@ -502,14 +631,15 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     const ok = assemble();
     if (!ok) {
       refresh();
-      app.announce(t('live.asmErrors', { count: ui.diagnostics.length }));
-      editor.goToLine(ui.diagnostics.find((d) => d.file === 0)?.line ?? 1, ui.diagnostics[0]?.col ?? 1);
+      app.announce(errorAnnouncement());
+      if (ui.compileError) srcEditor.goToLine(ui.compileError.line, ui.compileError.col);
+      else editor.goToLine(ui.diagnostics.find((d) => d.file === 0)?.line ?? 1, ui.diagnostics[0]?.col ?? 1);
       return;
     }
     if (sandbox) {
-      setNotice('ok', t('notice.assembled'));
+      setNotice('ok', t(setzMode ? 'notice.compiled' : 'notice.assembled'));
       refresh();
-      app.announce(t('live.assembled'));
+      app.announce(t(setzMode ? 'live.compiled' : 'live.assembled'));
       return;
     }
     const result = session.runTests();
@@ -550,7 +680,7 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     taskTabs.setHidden('result', false);
     mount(resultBody, renderResult({
       t, lang, level, result, record: record(), next, tutorialMissing,
-      onSaveSlot: (i) => progress.saveSlot(level.id, i, editor.value),
+      onSaveSlot: (i) => progress.saveSlot(level.id, i, playerCode()),
     }));
   }
 
@@ -576,6 +706,7 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
       case 'runPause': runPause(); break;
       case 'restart': restart(); break;
       case 'breakpoint': {
+        if (srcEditor && document.activeElement === srcEditor.textarea) { toggleSrcBreakpoint(srcEditor.caretLine()); break; }
         const inEditor = document.activeElement === editor.textarea;
         const pcLine = ui.addrToLine.get(session.state().pc);
         toggleBreakpoint(inEditor ? editor.caretLine() : pcLine ?? editor.caretLine());
@@ -624,7 +755,7 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
 
   function renderStatus() {
     const st = session.state();
-    const dirty = ui.assembledSource !== null && ui.assembledSource !== editor.value;
+    const dirty = ui.assembledSource !== null && ui.assembledSource !== playerCode();
     const kind = ui.running ? 'running' : ui.assembledSource === null || st.status === STATUS.NOT_ASSEMBLED ? 'idle' : STATUS_NAME[st.status];
     statusChip.dataset.kind = kind;
     const parts = [el('span', { class: 'status-dot', 'aria-hidden': 'true' }), el('span', {}, statusText())];
@@ -652,7 +783,27 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     renderToolbar();
     renderStatus();
     const counts = new Map(assembled ? session.lineCounts() : []);
-    editor.update({ current: assembled && st.status !== STATUS.HALTED ? line : null, hot: ui.hotLine, errors: ui.diagnostics, counts, breakpoints: ui.bpLines, codeLines: new Set(ui.lineToAddr.keys()) });
+    const current = assembled && st.status !== STATUS.HALTED ? line : null;
+    editor.update({ current, hot: ui.hotLine, errors: ui.diagnostics, counts, breakpoints: ui.bpLines, codeLines: new Set(ui.lineToAddr.keys()) });
+    if (srcEditor) {
+      // The Setzwerk side mirrors the assembly: current line, hottest line, how often a source
+      // line ran (its most executed instruction), breakpoints and where one can be set.
+      const src = (n) => (n === null ? null : ui.srcOfAsm.get(n) ?? null);
+      const srcCounts = new Map();
+      for (const [n, c] of counts) {
+        const s = src(n);
+        if (s !== null && c > (srcCounts.get(s) ?? 0)) srcCounts.set(s, c);
+      }
+      const e = ui.compileError;
+      srcEditor.update({
+        current: assembled ? src(current) : null,
+        hot: src(ui.hotLine),
+        errors: e ? [{ file: 0, line: e.line, col: e.col, len: 1 }] : [],
+        counts: srcCounts,
+        breakpoints: new Set([...ui.asmOfSrc].filter(([, a]) => ui.bpLines.has(a)).map(([s]) => s)),
+        codeLines: new Set(assembled ? ui.asmOfSrc.keys() : []),
+      });
+    }
     const editable = assembled && !ui.running && (st.status === STATUS.PAUSED || st.status === STATUS.BREAKPOINT);
     registers.update({ regs: st.regs, flags: st.flags, pc: st.pc, line, prevRegs: ui.prev?.regs, prevFlags: ui.prev?.flags, changedRegs: ui.changedRegs, quiet: ui.quietBytes, editable, canTravel: assembled && st.steps > 0 && !ui.running });
     const frames = assembled ? session.frames() : [];
@@ -702,7 +853,7 @@ export async function renderWorkspace(app, { levelId = null, sandbox = false, in
     destroy() {
       stop();
       clearTimeout(saveTimer);
-      progress.saveCode(storeId, editor.value);
+      progress.saveCode(storeId, playerCode());
       stack.destroy?.();
       session.free();
     },

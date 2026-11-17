@@ -1,0 +1,176 @@
+[level]
+id = 8-1-quersumme
+version = 1
+chapter = 8
+order = 1
+kind = normal
+language = setz
+title.de = Quersumme
+title.en = Digit Sum
+card.de = Die erste Aufgabe in Setzwerk: Schleifen, % und / statt Sprüngen.
+card.en = Your first task in Setzwerk: loops, % and / instead of jumps.
+budget = 100000
+seed = 8101
+mobile = no
+
+[text.de]
+Ab jetzt schreibst du nicht mehr Assembler, sondern **Setzwerk**: eine kleine Sprache wie C. Der Compiler übersetzt sie in genau die Befehle, die du in den Kapiteln davor von Hand geschrieben hast. Links steht dein Setzwerk, rechts der Assembler, der daraus entsteht, Zeile für Zeile kommentiert. Was erlaubt ist, steht im Handbuch unter [Setzwerk](handbuch:setzwerk).
+
+Lies Zahlen (`read()`), bis eine 0 kommt. Gib für jede Zahl ihre **Quersumme** aus (`print(…)`), also die Summe ihrer Ziffern. Alle Zahlen sind positiv.
+
+Beispiel: Eingabe 123 4005 0 → Ausgabe 6 9.
+
+[text.en]
+From now on you no longer write assembly but **Setzwerk**: a small language like C. The compiler translates it into exactly the instructions you wrote by hand in the chapters before. On the left is your Setzwerk, on the right the assembly made from it, commented line by line. What you may write is in the manual under [Setzwerk](handbuch:setzwerk).
+
+Read numbers (`read()`) until a 0 arrives. For every number, output its **digit sum** (`print(…)`), the sum of its digits. All numbers are positive.
+
+Example: input 123 4005 0 → output 6 9.
+
+[hint.de]
+Die letzte Ziffer von n ist `n % 10`, und `n / 10` streicht sie weg. Wiederhole beides, bis n 0 ist.
+---
+Du brauchst zwei Schleifen: eine äußere über alle Zahlen der Eingabe und eine innere über die Ziffern einer Zahl. Die Summe muss für jede Zahl wieder bei 0 anfangen.
+---
+```
+fn main() {
+    var n = read();
+    while (n != 0) {
+        var s = 0;
+        // ??? solange n > 0: letzte Ziffer zu s, dann n / 10
+        print(s);
+        n = read();
+    }
+}
+```
+
+[hint.en]
+The last digit of n is `n % 10`, and `n / 10` removes it. Repeat both until n is 0.
+---
+You need two loops: an outer one over all numbers of the input and an inner one over the digits of one number. The sum has to start at 0 again for every number.
+---
+```
+fn main() {
+    var n = read();
+    while (n != 0) {
+        var s = 0;
+        // ??? while n > 0: add the last digit to s, then n / 10
+        print(s);
+        n = read();
+    }
+}
+```
+
+[learned.de]
+Du hast dein erstes Programm in einer **Hochsprache** geschrieben. Schau rechts in den Assembler: Aus `while (n > 0)` werden ein Label, ein `cmp` und ein bedingter Sprung, genau wie in Kapitel 2. `var s` ist ein Platz im Stack-Rahmen von `main`, `[fp - 8]` oder ähnlich.
+
+Der Compiler ist dabei nicht schlau: Jeder Zwischenwert landet in r0, ein zweiter Operand kommt über den Stack. Dein eigener Assembler aus Kapitel 2 war kürzer. Das ist der Preis für Bequemlichkeit, und genau den drücken echte Compiler mit Optimierungen.
+
+Echte Werkzeuge: `gcc -S prog.c` oder der Compiler Explorer (godbolt.org) zeigen dir zu C-Code den Assembler für x86-64 oder ARM64, auch Zeile für Zeile.
+
+[learned.en]
+You wrote your first program in a **high-level language**. Look at the assembly on the right: `while (n > 0)` becomes a label, a `cmp` and a conditional jump, exactly as in chapter 2. `var s` is a slot in the stack frame of `main`, `[fp - 8]` or similar.
+
+The compiler is not clever about it: every intermediate value goes to r0, a second operand travels over the stack. Your own assembly from chapter 2 was shorter. That is the price of convenience, and it is exactly what real compilers bring down with optimisations.
+
+Real tools: `gcc -S prog.c` or the Compiler Explorer (godbolt.org) show you the assembly for C code on x86-64 or ARM64, line by line as well.
+
+[start]
+// Quersumme: lies Zahlen, bis 0 kommt, und gib für jede die Quersumme aus.
+fn main() {
+}
+
+[reference]
+// Quersumme jeder Zahl, bis eine 0 kommt.
+fn main() {
+    var n = read();
+    while (n != 0) {
+        var s = 0;
+        while (n > 0) {
+            s = s + n % 10;
+            n = n / 10;
+        }
+        print(s);
+        n = read();
+    }
+}
+
+[test]
+name = beispiel
+in = 123 4005 0
+out = 6 9
+
+[test]
+name = einstellig
+in = 7 0
+out = 7
+
+[test]
+name = gross
+in = 2147483647 1000000000 0
+out = 46 1
+
+[test]
+name = leer
+in = 0
+out = 
+
+[test]
+name = verdeckt-1
+hidden = yes
+in = 99 0
+out = 18
+
+[test]
+name = verdeckt-2
+hidden = yes
+in = 10 0
+out = 1
+
+[test]
+name = verdeckt-3
+hidden = yes
+in = 1 2 3 0
+out = 1 2 3
+
+[test]
+name = verdeckt-4
+hidden = yes
+in = 999999999 0
+out = 81
+
+[test]
+name = verdeckt-5
+hidden = yes
+in = 808 707 0
+out = 16 14
+
+[test]
+name = verdeckt-6
+hidden = yes
+in = 5 50 500 5000 0
+out = 5 5 5 5
+
+[test]
+name = verdeckt-7
+hidden = yes
+in = 123456789 0
+out = 45
+
+[test]
+name = verdeckt-8
+hidden = yes
+in = 11 0
+out = 2
+
+[test]
+name = verdeckt-9
+hidden = yes
+in = 86400 31536000 0
+out = 18 18
+
+[test]
+name = verdeckt-10
+hidden = yes
+in = 42 0
+out = 6

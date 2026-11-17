@@ -2,7 +2,7 @@
 
 **Assembly puzzles in the browser, on a small 32-bit CPU of its own.**
 
-Thirty puzzles in eight chapters take you from changing one register to linked lists on the heap. You write assembly, run it against tests and step through it in a debugger that can also go backwards. Every level ends with what a real x86, ARM or RISC-V processor and a C compiler do in the same situation.
+Thirty-five puzzles in nine chapters take you from changing one register to linked lists on the heap and on to **Setzwerk**, a small C-like language whose compiler shows you the assembly it makes. You write assembly, run it against tests and step through it in a debugger that can also go backwards. Every level ends with what a real x86, ARM or RISC-V processor and a C compiler do in the same situation.
 
 [Deutsche Version → README.de.md](README.de.md)
 
@@ -28,6 +28,7 @@ Each chapter opens once the required levels of the chapters before it are solved
 | 5 · Stack & Subroutines | Backwards · Pixel Function · The Forgotten Pop · Line | push/pop, `call`/`ret`, return address, calling convention, caller- and callee-saved registers |
 | 6 · Recursion | Factorial · Fibonacci Gone Wrong · Flood Fill · Towers of Hanoi | stack frames, frame pointer, prologue and epilogue, recursion depth, stack overflow |
 | 7 · Heap & Lists | Chain Links · After Free · Sorted Insert | `ALLOC`/`FREE`, pointers, null, memory leaks, use after free |
+| 8 · Setzwerk | Digit Sum · Greatest Common Divisor · Prime Numbers · Binary, Thought Backwards · Power Modulo | a high-level language and its compiler: loops, functions and recursion next to the assembly they become |
 
 Seven levels are **debugging levels**: the start code has a bug, and you find it with the debugger instead of by guessing. Every level has a task, three hints (from the idea to almost the solution), visible and hidden tests, and a "What you just learned" page. The full plan with learning goals is in [docs/CURRICULUM.md](docs/CURRICULUM.md).
 
@@ -42,14 +43,15 @@ Seven levels are **debugging levels**: the start code has a bug, and you find it
 | **Screen** | The 64×64 screen with three views: actual, expected and difference (wrong pixels hatched). Point at a pixel to see its coordinate, address and colour. |
 | **Hex dump** | All 64 KiB by segment, as bytes or words, with the heap fill patterns `CD`/`DD` visible. |
 | **Heap map** | Every 4-byte granule of the heap as free, allocated, freed or red zone, plus a list of blocks with the line that requested them. |
-| **Manual** | Eleven short topics (registers, instructions, flags, two's complement, memory, stack, calling convention, heap, screen, system calls, debugger), linked from the level texts. |
+| **Manual** | Twelve short topics (registers, instructions, flags, two's complement, memory, stack, calling convention, heap, screen, system calls, debugger, Setzwerk), linked from the level texts. |
 | **Sandbox** | A free program without a task, with interactive input and five examples. |
+| **Setzwerk** | A small C-like language ([docs/SETZWERK.md](docs/SETZWERK.md)) compiled in the browser: your source on the left, the generated assembly with a comment for every source line on the right, run and debugged on the same machine with the current source line marked. Chapter 8 is played this way. |
 | **Share link** | A sandbox program travels compressed inside the link. Nothing is uploaded, and an opened link never runs by itself. |
 | **Result** | Your cycles and size compared with the reference solution, two badges (Compact, Swift) and three slots per level to keep solutions. |
 
 <p>
   <img src="docs/img/workspace.png" width="49%" alt="A level in the workspace: task, editor, debugger, registers and stack">
-  <img src="docs/img/chapters.png" width="49%" alt="The chapter plan with eight chapters and thirty levels">
+  <img src="docs/img/chapters.png" width="49%" alt="The chapter plan">
 </p>
 
 <img src="docs/img/mobile.png" width="260" alt="Stapelwerk on a phone">

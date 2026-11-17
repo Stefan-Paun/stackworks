@@ -3,7 +3,7 @@
 import { el, mount } from '../dom.js';
 import { renderMarkup } from '../markup.js';
 
-export const MANUAL_TOPICS = ['register', 'befehle', 'flags', 'zweierkomplement', 'speicher', 'stack', 'aufruf', 'heap', 'bildschirm', 'systemaufrufe', 'debugger'];
+export const MANUAL_TOPICS = ['register', 'befehle', 'flags', 'zweierkomplement', 'speicher', 'stack', 'aufruf', 'heap', 'bildschirm', 'systemaufrufe', 'debugger', 'setzwerk'];
 
 export function topicContent(t, topic, headingLevel = 2) {
   const id = MANUAL_TOPICS.includes(topic) ? topic : MANUAL_TOPICS[0];

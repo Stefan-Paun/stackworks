@@ -114,17 +114,123 @@ fuell:                      ; r0 = x, r1 = y
   },
 ];
 
-export function createSandboxPanel({ t, getCode, onLoad }) {
+// Setzwerk examples (#/setzwerk), with comments in both languages.
+export const SETZ_EXAMPLES = [
+  {
+    id: 'hello',
+    code: {
+      de: `// Hallo: putc gibt ein Zeichen aus, print eine Zahl.
+fn main() {
+    putc('H'); putc('i'); putc('\\n');
+    print(6 * 7);
+}
+`,
+      en: `// Hello: putc outputs a character, print a number.
+fn main() {
+    putc('H'); putc('i'); putc('\\n');
+    print(6 * 7);
+}
+`,
+    },
+  },
+  {
+    id: 'fak',
+    code: {
+      de: `// Fakultät, rekursiv: jeder Aufruf bekommt einen eigenen Rahmen.
+fn fak(n) {
+    if (n <= 1) { return 1; }
+    return n * fak(n - 1);
+}
+
+fn main() {
+    print(fak(5));
+}
+`,
+      en: `// Factorial, recursively: every call gets a frame of its own.
+fn fak(n) {
+    if (n <= 1) { return 1; }
+    return n * fak(n - 1);
+}
+
+fn main() {
+    print(fak(5));
+}
+`,
+    },
+  },
+  {
+    id: 'collatz',
+    code: {
+      de: `// Collatz: liest Zahlen in der Konsole, bis 0 kommt, und zählt die Schritte bis 1.
+fn main() {
+    var n = read();
+    while (n != 0) {
+        var schritte = 0;
+        while (n != 1) {
+            if (n % 2 == 0) { n = n / 2; } else { n = 3 * n + 1; }
+            schritte = schritte + 1;
+        }
+        print(schritte);
+        n = read();
+    }
+}
+`,
+      en: `// Collatz: reads numbers in the console until 0 and counts the steps down to 1.
+fn main() {
+    var n = read();
+    while (n != 0) {
+        var steps = 0;
+        while (n != 1) {
+            if (n % 2 == 0) { n = n / 2; } else { n = 3 * n + 1; }
+            steps = steps + 1;
+        }
+        print(steps);
+        n = read();
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'args',
+    code: {
+      de: `// Sechs Argumente: vier kommen in r0 bis r3, der Rest über den Stack.
+fn summe(a, b, c, d, e, f) {
+    return a + b + c + d + e + f;
+}
+
+fn main() {
+    print(summe(1, 2, 3, 4, 5, 6));
+}
+`,
+      en: `// Six arguments: four travel in r0 to r3, the rest over the stack.
+fn sum(a, b, c, d, e, f) {
+    return a + b + c + d + e + f;
+}
+
+fn main() {
+    print(sum(1, 2, 3, 4, 5, 6));
+}
+`,
+    },
+  },
+];
+
+/**
+ * Side panel of a sandbox. `examples` are [{id, code}] with `code` a string or {de, en};
+ * `texts` is the i18n key prefix ('sandbox' or 'setz'); `route` the share route.
+ */
+export function createSandboxPanel({ t, lang = 'de', getCode, onLoad, examples = SANDBOX_EXAMPLES, texts = 'sandbox', route = 'sandbox' }) {
   const shareOut = el('input', { class: 'mono share-out', type: 'text', readonly: true, 'aria-label': t('sandbox.shareLink'), hidden: true });
   const shareNote = el('p', { class: 'muted share-note', 'aria-live': 'polite' });
   const node = el('div', { class: 'sandbox-panel prose' },
-    el('h2', {}, t('sandbox.title')),
-    el('p', {}, t('sandbox.intro')),
+    el('h2', {}, t(`${texts}.title`)),
+    el('p', {}, t(`${texts}.intro`)),
     el('h3', {}, t('sandbox.examples')),
-    el('ul', { class: 'examples' }, SANDBOX_EXAMPLES.map((ex) => el('li', {},
-      el('button', { type: 'button', class: 'example', onclick: () => onLoad(ex.code) },
-        el('strong', {}, t(`sandbox.ex.${ex.id}`)),
-        el('span', { class: 'muted' }, t(`sandbox.ex.${ex.id}.note`)))))),
+    el('ul', { class: 'examples' }, examples.map((ex) => el('li', {},
+      el('button', { type: 'button', class: 'example', onclick: () => onLoad(typeof ex.code === 'string' ? ex.code : ex.code[lang] ?? ex.code.de) },
+        el('strong', {}, t(`${texts}.ex.${ex.id}`)),
+        el('span', { class: 'muted' }, t(`${texts}.ex.${ex.id}.note`)))))),
     el('h3', {}, t('sandbox.share')),
     el('p', { class: 'muted' }, t('sandbox.shareNote')),
     el('button', {
@@ -133,7 +239,7 @@ export function createSandboxPanel({ t, getCode, onLoad }) {
       onclick: async () => {
         const code = await encodeSource(getCode());
         const url = new URL(location.href);
-        url.hash = `#/sandbox?code=${code}`;
+        url.hash = `#/${route}?code=${code}`;
         shareOut.hidden = false;
         shareOut.value = url.href;
         shareOut.select();

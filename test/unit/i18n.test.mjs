@@ -54,7 +54,7 @@ test('no unknown key in the code', () => {
 
 test('key families built at run time exist', () => {
   const families = {
-    'chapter.': [0, 1, 2, 3, 4, 5, 6, 7],
+    'chapter.': [0, 1, 2, 3, 4, 5, 6, 7, 8],
     'status.': ['paused', 'halted', 'fault', 'breakpoint', 'waiting', 'budget', 'not_assembled', 'running'],
     'seg.': ['text', 'data', 'input', 'heap', 'stack', 'screen'],
     'seg.rights.': ['text', 'data', 'input', 'heap', 'stack', 'screen'],
@@ -68,9 +68,12 @@ test('key families built at run time exist', () => {
     'result.badge.': ['compact', 'fast', 'compact.rule', 'fast.rule'],
     'plan.state.': ['solved', 'open', 'locked'],
     'help.': ['step', 'back', 'runPause', 'restart', 'breakpoint', 'tests', 'help'],
-    'nav.': ['home', 'sandbox', 'manual', 'about'],
+    'nav.': ['home', 'sandbox', 'setzwerk', 'manual', 'about'],
     'about.': ['what.title', 'privacy.title', 'progress.title', 'keys.title', 'licenses.title', 'ai.title', 'engine.title'],
     'sandbox.ex.': ['count', 'echo', 'hello', 'list', 'flood', 'count.note', 'echo.note', 'hello.note', 'list.note', 'flood.note'],
+    'setz.ex.': ['hello', 'fak', 'collatz', 'args', 'hello.note', 'fak.note', 'collatz.note', 'args.note'],
+    'setz.what.': ['var', 'fn', 'param', 'variable', 'function'],
+    'setz.found.': ['eof', 'number', 'token'],
     'access.': ['r', 'w'],
     'kind.': ['tutorial', 'debug', 'final', 'bonus', 'screen', 'mobile'],
     'regs.': ['callerSaved', 'calleeSaved', 'pointers'],
@@ -98,4 +101,20 @@ test('every error key from the spec has a text', () => {
     'abi.bad_handle', 'abi.bad_arg', 'abi.not_assembled',
   ];
   assert.deepEqual(keys.filter((k) => !(k in de)), []);
+});
+
+test('every Setzwerk compiler error key has a text with its arguments', () => {
+  const rust = readFileSync(fileURLToPath(new URL('../../crates/setz/src/lib.rs', import.meta.url)), 'utf8');
+  const list = rust.slice(rust.indexOf('pub const ERROR_KEYS'), rust.indexOf('];', rust.indexOf('pub const ERROR_KEYS')));
+  const keys = [...list.matchAll(/"(setz\.[a-z_]+)"/g)].map((m) => m[1]);
+  assert.equal(keys.length, 24);
+  assert.deepEqual(keys.filter((k) => !(k in de) || !(k in en)), []);
+  // Arguments the compiler sends (crates/setz/src: vec![("name", …)]) appear in both texts.
+  const src = ['lexer.rs', 'parser.rs', 'codegen.rs'].map((f) => readFileSync(fileURLToPath(new URL(`../../crates/setz/src/${f}`, import.meta.url)), 'utf8')).join('\n');
+  for (const m of src.matchAll(/"(setz\.[a-z_]+)",\s*vec!\[([^\]]*)\]/g)) {
+    for (const a of m[2].matchAll(/\("([a-z_]+)"/g)) {
+      assert.ok(de[m[1]].includes(`{${a[1]}}`), `${m[1]} (de) lacks {${a[1]}}`);
+      assert.ok(en[m[1]].includes(`{${a[1]}}`), `${m[1]} (en) lacks {${a[1]}}`);
+    }
+  }
 });

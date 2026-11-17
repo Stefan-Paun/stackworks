@@ -125,7 +125,7 @@ function englishShell(de) {
     [/<meta name="description" content="[^"]*">/, '<meta name="description" content="A learning game in the browser: assembly puzzles on a home-made 32-bit teaching CPU, with a debugger and time travel. No account, no data, works offline.">'],
     [`<link rel="canonical" href="${SITE}">`, `<link rel="canonical" href="${SITE}en/">`],
     [/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`],
-    [/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="30 levels from registers to the heap, with a debugger and time travel. No account, no data, works offline.">'],
+    [/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="35 levels from registers to a small language of its own, with a debugger and time travel. No account, no data, works offline.">'],
     [`<meta property="og:url" content="${SITE}">`, `<meta property="og:url" content="${SITE}en/">`],
     [/<meta property="og:image:alt" content="[^"]*">/, '<meta property="og:image:alt" content="Stapelwerk: how a computer really computes. A stack of words drawn on a drafting sheet.">'],
     ['<meta property="og:locale" content="de_AT">', '<meta property="og:locale" content="en_GB">'],

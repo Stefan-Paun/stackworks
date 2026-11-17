@@ -3,6 +3,7 @@
 //   #/level/<id>       workspace
 //   #/manual[/<topic>] manual
 //   #/sandbox[?code=…] sandbox
+//   #/setzwerk[?code=…] Setzwerk (compiler view, a sandbox for the language)
 //   #/about            about, privacy, progress
 // Pure parsing and formatting; startRouter() is the only DOM-touching part.
 
@@ -30,6 +31,7 @@ export function parseHash(hash) {
     if (ID.test(arg)) return { name: 'manual', params: { topic: arg }, query };
   }
   if (head === 'sandbox' && arg === undefined) return { name: 'sandbox', params: {}, query };
+  if (head === 'setzwerk' && arg === undefined) return { name: 'setzwerk', params: {}, query };
   if (head === 'about' && arg === undefined) return { name: 'about', params: {}, query };
   return { name: 'notfound', params: { path }, query };
 }
@@ -42,6 +44,7 @@ export function formatRoute(name, params = {}, query = null) {
     case 'level': path = `#/level/${encodeURIComponent(params.id)}`; break;
     case 'manual': path = params.topic ? `#/manual/${encodeURIComponent(params.topic)}` : '#/manual'; break;
     case 'sandbox': path = '#/sandbox'; break;
+    case 'setzwerk': path = '#/setzwerk'; break;
     case 'about': path = '#/about'; break;
     default: throw new Error(`unknown route ${name}`);
   }

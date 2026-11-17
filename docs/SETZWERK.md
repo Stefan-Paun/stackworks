@@ -14,7 +14,8 @@ stapelwerk run prog.s --in "3 4"      # run it like any other program
 
 Contents: [Example](#example) · [Lexical structure](#lexical-structure) · [Grammar](#grammar) ·
 [Semantics](#semantics) · [Names and scopes](#names-and-scopes) · [Code generation](#code-generation) ·
-[Stack frame](#stack-frame) · [Limits and errors](#limits-and-errors) · [Tests](#tests)
+[Stack frame](#stack-frame) · [Limits and errors](#limits-and-errors) · [Error keys](#error-keys) ·
+[In the browser](#in-the-browser) · [Levels](#levels) · [Tests](#tests)
 
 ## Example
 
@@ -211,6 +212,42 @@ panics, whatever the input (tested with 10 000 random and mutated inputs).
 | local slots per function | 4000 | offsets must fit `[fp - 32768]` |
 | parameters per function | 64 | |
 | program size | text ≤ 16128 bytes, data ≤ 8192 bytes | the machine's segments; checked by assembling the output |
+
+## Error keys
+
+Like the assembler, the compiler reports errors as a **key** with string arguments
+(`Error { pos, key, args, msg }`); `msg` is the English text for the command line, the web view
+translates key and arguments (`web/js/texts/de.js`, `en.js`). `stapelwerk_setz::ERROR_KEYS` lists all
+24 keys; a Rust test checks that the sources produce exactly these, a Node test that both languages
+have a text with every argument. Argument `found` is the token found (empty at the end of the file),
+`what` is `var`/`fn`/`param` or `variable`/`function`.
+
+`setz.bad_number` {text} · `setz.bad_char` · `setz.unexpected_char` {char} · `setz.expected_top`
+{found} · `setz.expected_token` {token, found} · `setz.expected_name` {what, found} · `setz.too_deep`
+{max} · `setz.global_not_constant` {found} · `setz.missing_brace` · `setz.expected_expr` {found} ·
+`setz.reserved_name` {what, name} · `setz.duplicate` {name} · `setz.main_params` ·
+`setz.too_many_params` {max} · `setz.duplicate_param` {name} · `setz.not_a_variable` {name} ·
+`setz.unknown_variable` {name} · `setz.too_many_locals` {max} · `setz.already_declared` {name} ·
+`setz.is_function_name` {name} · `setz.break_outside_loop` · `setz.not_a_function` {name} ·
+`setz.unknown_function` {name} · `setz.arity` {name, expected, given}
+
+## In the browser
+
+The compiler is part of `stapelwerk.wasm` (export `setz_compile`, [ABI.md](ABI.md)); `vm.compileSetz(src,
+lang)` returns the assembly with comments in the page language (`compile_in(…, Lang::De)` writes
+`; Zeile N:`, `; Prolog`, …; only comments differ). The view `#/setzwerk` (navigation "Setzwerk") is
+a sandbox for the language: Setzwerk editor on the left, generated assembly read-only on the right,
+examples and share links in the side panel. Run, Step, Back, breakpoints, registers, stack, screen,
+console and memory are the normal workspace working on the generated assembly; the Setzwerk side
+mirrors the current line, the hottest line, execution counts and breakpoints (a breakpoint on a
+Setzwerk line sits on its first instruction). The source line of each instruction comes from the
+`; line N:` comments. A compile error unloads the machine and is shown under the source.
+
+## Levels
+
+Chapter 8 (five levels, `language = setz`, see [CURRICULUM.md](CURRICULUM.md)) is played in the same
+two-editor view. How `check-levels` and `pack-levels` handle Setzwerk levels is in
+[LEVELS.md](LEVELS.md#checking-and-packing).
 
 ## Tests
 

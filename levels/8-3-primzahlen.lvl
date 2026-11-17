@@ -1,0 +1,196 @@
+[level]
+id = 8-3-primzahlen
+version = 1
+chapter = 8
+order = 3
+kind = normal
+language = setz
+title.de = Primzahlen
+title.en = Prime Numbers
+card.de = Eine Funktion mit frühem return, aufgerufen in einer Schleife.
+card.en = A function with an early return, called inside a loop.
+budget = 200000
+seed = 8301
+mobile = no
+
+[text.de]
+Lies eine Zahl n (0 ≤ n ≤ 200) und gib alle **Primzahlen** von 2 bis n aus, aufsteigend.
+
+Eine Primzahl hat genau zwei Teiler: 1 und sich selbst. Schreib dafür am besten eine eigene Funktion `prim(p)`, die 1 oder 0 zurückgibt, und ruf sie aus `main` auf.
+
+Beispiel: n = 20 → 2 3 5 7 11 13 17 19.
+
+[text.en]
+Read a number n (0 ≤ n ≤ 200) and output all **prime numbers** from 2 to n, in ascending order.
+
+A prime has exactly two divisors: 1 and itself. Best write a function of its own for it, `prim(p)`, that returns 1 or 0, and call it from `main`.
+
+Example: n = 20 → 2 3 5 7 11 13 17 19.
+
+[hint.de]
+p ist prim, wenn kein t mit 2 ≤ t und t · t ≤ p die Zahl p teilt (`p % t == 0`). Größere Teiler musst du nicht prüfen: Zu jedem großen Teiler gehört ein kleiner.
+---
+`return` darf mitten in einer Schleife stehen: Sobald ein Teiler gefunden ist, ist die Antwort klar. Nur wenn die Schleife ganz durchläuft, gibst du 1 zurück.
+---
+```
+fn prim(p) {
+    var t = 2;
+    while (t * t <= p) {
+        // ??? Teiler gefunden: 0 zurückgeben
+        t = t + 1;
+    }
+    return 1;
+}
+
+fn main() {
+    var n = read();
+    // ??? p von 2 bis n, die Primzahlen ausgeben
+}
+```
+
+[hint.en]
+p is prime if no t with 2 ≤ t and t · t ≤ p divides p (`p % t == 0`). You need not check larger divisors: every large divisor comes with a small one.
+---
+`return` may stand in the middle of a loop: as soon as a divisor is found, the answer is clear. Only when the loop runs all the way through do you return 1.
+---
+```
+fn prim(p) {
+    var t = 2;
+    while (t * t <= p) {
+        // ??? divisor found: return 0
+        t = t + 1;
+    }
+    return 1;
+}
+
+fn main() {
+    var n = read();
+    // ??? p from 2 to n, output the primes
+}
+```
+
+[learned.de]
+Ein `return` mitten in der Schleife wird rechts zu `jmp .exit`: ein Sprung direkt zum Epilog der Funktion. Der Epilog räumt den Rahmen ab, egal von wo du kommst. `if (prim(p))` ruft die Funktion, vergleicht r0 mit 0 und springt, genau wie dein `cmp` + `jz` aus Kapitel 2.
+
+Echte Compiler würden `prim` hier vermutlich **inlinen**: den Funktionskörper direkt in die Schleife kopieren und sich `call`, Prolog und Epilog sparen. Setzwerk macht das nicht, darum siehst du jeden Aufruf einzeln in der Stack-Ansicht.
+
+**Profi-Blick:** Für viele Primzahlen auf einmal ist das **Sieb des Eratosthenes** schneller. Es braucht aber ein Feld im Speicher, und das hat Setzwerk (noch) nicht.
+
+[learned.en]
+A `return` in the middle of the loop becomes `jmp .exit` on the right: a jump straight to the function's epilogue. The epilogue tears the frame down no matter where you come from. `if (prim(p))` calls the function, compares r0 with 0 and jumps, exactly like your `cmp` + `jz` from chapter 2.
+
+Real compilers would probably **inline** `prim` here: copy the function body right into the loop and save the `call`, prologue and epilogue. Setzwerk does not, which is why you see every call on its own in the stack view.
+
+**Pro view:** for many primes at once the **sieve of Eratosthenes** is faster. It needs an array in memory though, and Setzwerk does not have one (yet).
+
+[start]
+// Primzahlen: lies n und gib alle Primzahlen von 2 bis n aus.
+fn main() {
+}
+
+[reference]
+// prim(p) = 1, wenn p eine Primzahl ist (p ≥ 2).
+fn prim(p) {
+    var t = 2;
+    while (t * t <= p) {
+        if (p % t == 0) { return 0; }
+        t = t + 1;
+    }
+    return 1;
+}
+
+fn main() {
+    var n = read();
+    var p = 2;
+    while (p <= n) {
+        if (prim(p)) { print(p); }
+        p = p + 1;
+    }
+}
+
+[test]
+name = bis-20
+in = 20
+out = 2 3 5 7 11 13 17 19
+
+[test]
+name = bis-2
+in = 2
+out = 2
+
+[test]
+name = bis-1
+in = 1
+out = 
+
+[test]
+name = verdeckt-1
+hidden = yes
+in = 3
+out = 2 3
+
+[test]
+name = verdeckt-2
+hidden = yes
+in = 4
+out = 2 3
+
+[test]
+name = verdeckt-3
+hidden = yes
+in = 25
+out = 2 3 5 7 11 13 17 19 23
+
+[test]
+name = verdeckt-4
+hidden = yes
+in = 49
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47
+
+[test]
+name = verdeckt-5
+hidden = yes
+in = 97
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+
+[test]
+name = verdeckt-6
+hidden = yes
+in = 100
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+
+[test]
+name = verdeckt-7
+hidden = yes
+in = 121
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109 113
+
+[test]
+name = verdeckt-8
+hidden = yes
+in = 150
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109 113 127 131 137 139 149
+
+[test]
+name = verdeckt-9
+hidden = yes
+in = 169
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109 113 127 131 137 139 149 151 157 163 167
+
+[test]
+name = verdeckt-10
+hidden = yes
+in = 200
+out = 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109 113 127 131 137 139 149 151 157 163 167 173 179 181 191 193 197 199
+
+[test]
+name = verdeckt-11
+hidden = yes
+in = 0
+out = 
+
+[test]
+name = verdeckt-12
+hidden = yes
+in = 30
+out = 2 3 5 7 11 13 17 19 23 29

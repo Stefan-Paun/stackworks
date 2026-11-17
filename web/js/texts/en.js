@@ -567,4 +567,93 @@ The CPU is invented. It has no pipeline and no cache model. What a level says ab
   'abi.bad_handle': 'Internal error: invalid handle.',
   'abi.bad_arg': 'Internal error: invalid argument.',
   'abi.not_assembled': 'Assemble first.',
+
+  // Setzwerk (compiler view and chapter 8)
+  'nav.setzwerk': 'Setzwerk',
+  'chapter.8': 'Setzwerk',
+  'setz.title': 'Setzwerk',
+  'setz.intro': 'Write in Setzwerk, a small language like C. The compiler turns it into commented assembly that you read right next to it and run on the same machine as everything else: step by step, with stack and registers. Input for read() is typed into the console.',
+  'setz.ex.hello': 'Hello',
+  'setz.ex.hello.note': 'output characters and numbers',
+  'setz.ex.fak': 'Factorial',
+  'setz.ex.fak.note': 'recursion with stack frames',
+  'setz.ex.collatz': 'Collatz',
+  'setz.ex.collatz.note': 'reads your numbers and waits for input',
+  'setz.ex.args': 'Six arguments',
+  'setz.ex.args.note': 'registers and stack in a call',
+  'setz.codeTitle': 'Setzwerk and assembly',
+  'setz.srcTitle': 'Setzwerk',
+  'setz.asmTitle': 'Assembly (generated)',
+  'setz.editorLabel': 'Program (Setzwerk)',
+  'setz.asmLabel': 'Generated assembly, read only',
+  'setz.asmEmpty': '; The assembly appears here as soon as you compile (Ctrl+Enter).',
+  'setz.summary': 'Compile error in line {line}. The message is below the Setzwerk code.',
+  'setz.found.eof': 'the end of the file',
+  'setz.found.number': 'the number {v}',
+  'setz.found.token': '\'{v}\'',
+  'setz.what.var': 'a variable name',
+  'setz.what.fn': 'a function name',
+  'setz.what.param': 'a parameter name',
+  'setz.what.variable': 'a variable',
+  'setz.what.function': 'a function',
+  'setz.mock': 'Setzwerk needs the real core (WebAssembly); the mock cannot compile.',
+  'setz.bad_number': 'Invalid number \'{text}\' (32 bits at most).',
+  'setz.bad_char': 'Invalid character literal. Allowed are one character or \\n, \\t, \\0, \\\\, \\\' between \'…\'.',
+  'setz.unexpected_char': 'Unexpected character \'{char}\'.',
+  'setz.expected_top': 'Expected fn or var here, found {found}.',
+  'setz.expected_token': '\'{token}\' is missing here, found {found}.',
+  'setz.expected_name': 'Expected {what} here, found {found}.',
+  'setz.too_deep': 'Nested too deeply (more than {max} levels).',
+  'setz.global_not_constant': 'A global variable needs a fixed number as its initial value, found {found}.',
+  'setz.missing_brace': 'A \'}\' is missing before the end of the file.',
+  'setz.expected_expr': 'Expected an expression here, found {found}.',
+  'setz.reserved_name': 'The name \'{name}\' is already taken in the assembly (register, instruction, system call or constant). Choose another one for {what}.',
+  'setz.duplicate': '\'{name}\' is defined twice.',
+  'setz.main_params': 'main takes no parameters.',
+  'setz.too_many_params': 'More than {max} parameters.',
+  'setz.duplicate_param': 'The parameter \'{name}\' appears twice.',
+  'setz.not_a_variable': '\'{name}\' is a function, not a variable.',
+  'setz.unknown_variable': 'Unknown variable \'{name}\' (declare it with var).',
+  'setz.too_many_locals': 'More than {max} local variables in one function.',
+  'setz.already_declared': '\'{name}\' already exists in this block.',
+  'setz.is_function_name': '\'{name}\' is already the name of a function.',
+  'setz.break_outside_loop': 'break or continue outside a loop.',
+  'setz.not_a_function': '\'{name}\' is a variable, not a function.',
+  'setz.unknown_function': 'Unknown function \'{name}\'.',
+  'setz.arity': '\'{name}\' takes {expected} argument(s), here it gets {given}.',
+  'dbg.compileTest': 'Compile & test',
+  'dbg.compile': 'Compile',
+  'dbg.compileShort': 'Build',
+  'notice.compiled': 'Compiled and assembled. Step or Run starts the program.',
+  'live.compiled': 'Compiled.',
+  'live.setzError': 'Compile error in line {line}: {text}',
+  'manual.setzwerk.title': 'Setzwerk',
+  'manual.setzwerk.body': `**Setzwerk** is a small language like C. The compiler translates it into commented assembly for this machine. There are only integers (32 bits, signed).
+
+\`\`\`
+// comment up to the end of the line
+var counter = 0;          // global variable
+
+fn square(x) {            // function with a parameter
+    return x * x;
+}
+
+fn main() {               // the program starts here
+    var n = read();       // number from the input
+    while (n > 0) {
+        print(square(n)); // output a number
+        n = n - 1;
+    }
+    putc('\\n');           // output a character
+}
+\`\`\`
+
+- Statements: \`var\`, assignment \`=\`, \`if\` / \`else if\` / \`else\`, \`while\`, \`break\`, \`continue\`, \`return\`, \`print(…)\`, \`putc(…)\`.
+- Arithmetic: \`+ - * / %\`, bits \`& | ^ ~ << >>\`, comparisons \`< <= > >= == !=\` (result 1 or 0), logic \`&& || !\` with short-circuit.
+- Numbers: \`42\`, \`0x2A\`, \`0b101010\`, characters \`'A'\`. Overflow wraps modulo 2³², like the machine.
+- Without \`main\` the program is a collection of functions: that is how function tests call them directly.
+
+The compiler keeps the [calling convention](handbuch:aufruf): arguments 1–4 in r0–r3, more over the stack, the result in r0. Every function gets a stack frame; parameters and variables live at \`[fp - 4]\`, \`[fp - 8]\` …
+
+Next to your code is the generated assembly, with every Setzwerk line as a comment \`; line N: …\` above it. Step, Run and breakpoints work on the assembly; the current Setzwerk line is marked on the left as well. To try things freely, use the **Setzwerk** view in the navigation at the top.`,
 };

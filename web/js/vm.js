@@ -16,6 +16,7 @@
 //   s.output() → [{kind, value}]   s.fault() s.symbols() s.lineMap() s.lineCounts() s.frames()
 //   s.heap() s.disasm(addr, n) s.check() s.runTests() s.referenceScreen(test) s.digest()
 //   s.horizon() s.free()
+//   vm.compileSetz(src, lang) → {ok, asm} | {ok: false, error: {key, line, col, args}}   (Setzwerk)
 //
 // Status results are unsigned (0xFFFFFFFF = handle or argument error, STATUS.ERROR in machine.js).
 // JSON errors from the module ({"error":"abi.…"}) are thrown as VmError with that key. If the
@@ -217,6 +218,15 @@ class Vm {
 
   newSession(level) {
     return new Session(this, level ?? null);
+  }
+
+  /**
+   * Compiles Setzwerk source (docs/SETZWERK.md) to commented assembly; `lang` 'de' or 'en' sets
+   * the comment language. → {ok: true, asm} | {ok: false, error: {key, line, col, args}}.
+   */
+  compileSetz(source, lang = 'en') {
+    const len = this.withText(source, (ptr, n) => this.call('setz_compile', ptr, n, lang === 'de' ? 1 : 0));
+    return this.outJson(len);
   }
 }
 

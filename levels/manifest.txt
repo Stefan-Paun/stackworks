@@ -37,3 +37,9 @@
 7-1-kettenglieder.lvl
 7-2-nach-dem-freigeben.lvl
 7-3-sortiert-einfuegen.lvl
+# chapter 8: Setzwerk | Setzwerk
+8-1-quersumme.lvl
+8-2-ggt.lvl
+8-3-primzahlen.lvl
+8-4-binaer.lvl
+8-5-potenz-modulo.lvl

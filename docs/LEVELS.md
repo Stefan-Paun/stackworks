@@ -41,7 +41,7 @@ may appear only once appearing twice → `lvl.duplicate_section`.
 |---|---|
 | `id` | unique id, e.g. `2-2-bis-zur-null` (required) |
 | `version` | format version, `1` |
-| `chapter` | 0–7 |
+| `chapter` | 0–8 |
 | `order` | position in the chapter, 1… |
 | `title.de`, `title.en` | title |
 | `card.de`, `card.en` | one sentence for the level map |
@@ -51,6 +51,7 @@ may appear only once appearing twice → `lvl.duplicate_section`.
 | `allow` **or** `forbid` | mnemonics separated by spaces (both → `lvl.allow_and_forbid`) |
 | `heap_check` | `strict` (default) or `off` |
 | `mobile` | `yes` or `no`: playable on a phone |
+| `language` | `asm` (default) or `setz`: the player writes [Setzwerk](SETZWERK.md); `[start]` and `[reference]` are Setzwerk source |
 | `ref_cycles`, `ref_size` | only in packed files (written by `pack-levels`) |
 
 ### `[test]` keys
@@ -155,6 +156,14 @@ Metrics: `cycles_avg` (average over all tests, rounded up), `cycles_max`, `steps
 mutant must fail at least one test, otherwise the level fails with "tests too weak". Exceptions:
 `nop`, and instructions whose line carries the comment `; mutate:skip` (at most 2 per level, e.g. pure
 optimisations).
+
+**Setzwerk levels** (`language = setz`): `check-levels` compiles `[reference]` and `[start]` with
+the Setzwerk compiler first (compile errors are reported with lines of the `.lvl` file) and then
+checks the level like any other. `--mutate` deletes one Setzwerk **statement line** of the reference
+at a time (lines that only open or close a block, `fn` headers, blank and comment lines stay); a
+mutant that no longer compiles counts as caught, like an assembly mutant that no longer assembles.
+`// mutate:skip` exempts a line (at most 2). `pack-levels` compiles the reference for the metrics and
+keeps `[start]` as Setzwerk source; the web view compiles the player's code before assembling it.
 
 `stapelwerk pack-levels <dir> <target>` writes the web version of every level: `[reference]` is
 removed, `ref_cycles`/`ref_size` are written into `[level]`, reference screens become
