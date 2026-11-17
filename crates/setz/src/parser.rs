@@ -49,6 +49,8 @@ pub fn parse(toks: Vec<Token>) -> Result<Program, Error> {
             _ => {
                 return Err(Error::new(
                     t.pos,
+                    "setz.expected_top",
+                    vec![("found", found(&t.tok))],
                     format!(
                         "expected 'fn' or 'var' at the top level, found {}",
                         describe(&t.tok)
@@ -56,6 +58,16 @@ pub fn parse(toks: Vec<Token>) -> Result<Program, Error> {
                 ));
             }
         }
+    }
+}
+
+/// The found token as an error argument: the number or symbol text, empty at the end of file.
+fn found(t: &Tok) -> String {
+    match t {
+        Tok::Int(v) => v.to_string(),
+        Tok::Ident(s) => s.clone(),
+        Tok::Sym(s) => s.to_string(),
+        Tok::Eof => String::new(),
     }
 }
 
@@ -106,19 +118,31 @@ impl Parser {
         } else {
             Err(Error::new(
                 t.pos,
+                "setz.expected_token",
+                vec![("token", s.to_string()), ("found", found(&t.tok))],
                 format!("expected '{s}', found {}", describe(&t.tok)),
             ))
         }
     }
 
-    fn ident(&mut self, what: &str) -> Result<(String, Pos), Error> {
+    /// Reads a name; `what` is `var`, `fn` or `param` (error argument).
+    fn ident(&mut self, what: &'static str) -> Result<(String, Pos), Error> {
         let t = self.next();
         match t.tok {
             Tok::Ident(s) => Ok((s, t.pos)),
-            other => Err(Error::new(
-                t.pos,
-                format!("expected {what}, found {}", describe(&other)),
-            )),
+            other => {
+                let english = match what {
+                    "fn" => "a function name",
+                    "param" => "a parameter name",
+                    _ => "a variable name",
+                };
+                Err(Error::new(
+                    t.pos,
+                    "setz.expected_name",
+                    vec![("what", what.to_string()), ("found", found(&other))],
+                    format!("expected {english}, found {}", describe(&other)),
+                ))
+            }
         }
     }
 
@@ -127,6 +151,8 @@ impl Parser {
         if self.depth > MAX_DEPTH {
             Err(Error::new(
                 self.peek().pos,
+                "setz.too_deep",
+                vec![("max", MAX_DEPTH.to_string())],
                 format!("nested too deeply (more than {MAX_DEPTH} levels)"),
             ))
         } else {
@@ -140,7 +166,7 @@ impl Parser {
 
     fn global(&mut self) -> Result<Global, Error> {
         let pos = self.expect("var")?;
-        let (name, _) = self.ident("a variable name")?;
+        let (name, _) = self.ident("var")?;
         let mut init = 0i32;
         if self.eat("=") {
             let neg = self.eat("-");
@@ -150,6 +176,8 @@ impl Parser {
                 other => {
                     return Err(Error::new(
                         t.pos,
+                        "setz.global_not_constant",
+                        vec![("found", found(&other))],
                         format!(
                             "a global variable needs a constant number, found {}",
                             describe(&other)
@@ -164,12 +192,12 @@ impl Parser {
 
     fn function(&mut self) -> Result<Function, Error> {
         let pos = self.expect("fn")?;
-        let (name, _) = self.ident("a function name")?;
+        let (name, _) = self.ident("fn")?;
         self.expect("(")?;
         let mut params = Vec::new();
         if !self.is(")") {
             loop {
-                params.push(self.ident("a parameter name")?.0);
+                params.push(self.ident("param")?.0);
                 if !self.eat(",") {
                     break;
                 }
@@ -194,6 +222,8 @@ impl Parser {
                 let pos = self.peek().pos;
                 return Err(Error::new(
                     pos,
+                    "setz.missing_brace",
+                    Vec::new(),
                     "missing '}' before end of file".to_string(),
                 ));
             }
@@ -210,7 +240,7 @@ impl Parser {
         let stmt = match t.tok {
             Tok::Sym("var") => {
                 self.i += 1;
-                let (name, _) = self.ident("a variable name")?;
+                let (name, _) = self.ident("var")?;
                 let init = if self.eat("=") {
                     Some(self.expr()?)
                 } else {
@@ -401,6 +431,8 @@ impl Parser {
             }
             other => Err(Error::new(
                 t.pos,
+                "setz.expected_expr",
+                vec![("found", found(&other))],
                 format!("expected an expression, found {}", describe(&other)),
             )),
         }

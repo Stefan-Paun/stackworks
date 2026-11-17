@@ -402,6 +402,26 @@ pub extern "C" fn sess_assemble(s: u32, ptr: u32, len: u32) -> u32 {
     })
 }
 
+/// Compiles Setzwerk source to commented assembly (`docs/SETZWERK.md`). `lang` selects the comment
+/// language: 0 = English, 1 = German (anything else is `abi.bad_arg`). JSON
+/// `{"ok":true,"asm":…}` or `{"ok":false,"error":{key,line,col,args}}`. Needs no session.
+#[unsafe(no_mangle)]
+pub extern "C" fn setz_compile(ptr: u32, len: u32, lang: u32) -> u32 {
+    with(|st| {
+        let lang = match lang {
+            0 => stapelwerk_setz::Lang::En,
+            1 => stapelwerk_setz::Lang::De,
+            _ => return st.set_out(render::error(BAD_ARG)),
+        };
+        let Some(bytes) = st.input(ptr, len) else {
+            return st.set_out(render::error(BAD_ARG));
+        };
+        let source = String::from_utf8_lossy(&bytes);
+        let json = render::compiled(stapelwerk_setz::compile_in(&source, "setzwerk.sz", lang));
+        st.set_out(json)
+    })
+}
+
 /// Fresh machine for test `test`, or −1 for an interactive run.
 #[unsafe(no_mangle)]
 pub extern "C" fn sess_reset(s: u32, test: i32) -> u32 {

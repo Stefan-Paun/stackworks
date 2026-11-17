@@ -75,7 +75,7 @@ fn info_json_shape() {
     );
     assert!(
         j.contains(&format!(
-            r#""budget":100000,"seed":2202,"mobile":false,"heap_check":"strict","allow":null,"forbid":null,{tests},"hidden_tests":11,"ref_cycles":null,"ref_size":null,"sections":["text.de","text.en","hint.de","hint.en","learned.de","learned.en","start"]}}"#
+            r#""budget":100000,"seed":2202,"mobile":false,"heap_check":"strict","language":"asm","allow":null,"forbid":null,{tests},"hidden_tests":11,"ref_cycles":null,"ref_size":null,"sections":["text.de","text.en","hint.de","hint.en","learned.de","learned.en","start"]}}"#
         )),
         "{j}"
     );
@@ -231,7 +231,7 @@ fn every_lvl_error_with_its_line() {
     );
     assert_eq!(keys("[test]\nname = a\n"), vec![("lvl.missing_key", 1)]);
     for (extra, line) in [
-        ("chapter = 8", 3),
+        ("chapter = 9", 3),
         ("version = 2", 3),
         ("order = 0", 3),
         ("kind = boss", 3),

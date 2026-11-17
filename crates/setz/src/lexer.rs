@@ -78,8 +78,14 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, Error> {
             }
             let text: String = chars[start..i].iter().collect();
             col += (i - start) as u32;
-            let v = parse_int(&text)
-                .ok_or_else(|| Error::new(pos, format!("invalid number '{text}'")))?;
+            let v = parse_int(&text).ok_or_else(|| {
+                Error::new(
+                    pos,
+                    "setz.bad_number",
+                    vec![("text", text.to_string())],
+                    format!("invalid number '{text}'"),
+                )
+            })?;
             out.push(Token {
                 tok: Tok::Int(v),
                 pos,
@@ -87,8 +93,14 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, Error> {
             continue;
         }
         if c == '\'' {
-            let (v, len) = char_literal(&chars[i..])
-                .ok_or_else(|| Error::new(pos, "invalid character literal".to_string()))?;
+            let (v, len) = char_literal(&chars[i..]).ok_or_else(|| {
+                Error::new(
+                    pos,
+                    "setz.bad_char",
+                    Vec::new(),
+                    "invalid character literal".to_string(),
+                )
+            })?;
             i += len;
             col += len as u32;
             out.push(Token {
@@ -117,7 +129,12 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, Error> {
                 } else {
                     c.to_string()
                 };
-                return Err(Error::new(pos, format!("unexpected character '{shown}'")));
+                return Err(Error::new(
+                    pos,
+                    "setz.unexpected_char",
+                    vec![("char", shown.clone())],
+                    format!("unexpected character '{shown}'"),
+                ));
             }
         }
     }

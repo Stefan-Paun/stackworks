@@ -188,3 +188,22 @@ fn sandbox_input_and_errors() {
     assert_eq!(out(), r#"{"error":"abi.bad_handle"}"#);
     assert_eq!(sess_view(s), ERR);
 }
+
+#[test]
+fn setz_compile_ok_error_and_bad_arg() {
+    let src = "fn main() { print(6 * 7); }";
+    let n = call_text(src, |p, l| setz_compile(p, l, 0));
+    let json = out();
+    assert_eq!(n as usize, json.len());
+    assert!(json.starts_with(r#"{"ok":true,"asm":""#), "{json}");
+    assert!(json.contains("; line 1:"), "{json}");
+    call_text(src, |p, l| setz_compile(p, l, 1));
+    assert!(out().contains("; Zeile 1:"));
+    call_text("fn main() { x = 1; }", |p, l| setz_compile(p, l, 0));
+    assert_eq!(
+        out(),
+        r#"{"ok":false,"error":{"key":"setz.unknown_variable","line":1,"col":13,"args":{"name":"x"}}}"#
+    );
+    call_text(src, |p, l| setz_compile(p, l, 2));
+    assert_eq!(out(), r#"{"error":"abi.bad_arg"}"#);
+}

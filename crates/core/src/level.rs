@@ -52,6 +52,36 @@ impl LevelKind {
     }
 }
 
+/// `language` in `[level]`: what the player writes. Setzwerk levels (`setz`) keep Setzwerk
+/// source in `[start]` and `[reference]`; the command-line tool and the web view compile it to
+/// assembly before the core sees it (`docs/SETZWERK.md`).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Language {
+    #[default]
+    Asm,
+    Setz,
+}
+
+impl Language {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Language::Asm => "asm",
+            Language::Setz => "setz",
+        }
+    }
+
+    pub fn parse(s: &str) -> Option<Language> {
+        match s {
+            "asm" => Some(Language::Asm),
+            "setz" => Some(Language::Setz),
+            _ => None,
+        }
+    }
+}
+
+/// Highest chapter number.
+pub const MAX_CHAPTER: u32 = 8;
+
 /// Address in a test line (`set`, `setb`, `expect`, `expectb`): a number, a symbol of the
 /// assembled program (label or `.equ` constant, also from the library), or `SYMBOL + n` /
 /// `SYMBOL - n`. Built-in constants (`INPUT`, `SCREEN`, `HEAP`, `STACK_TOP`, `SCREEN_W`,
@@ -234,6 +264,7 @@ pub struct Level {
     pub filter: MnemonicFilter,
     pub heap_check: HeapCheck,
     pub mobile: bool,
+    pub language: Language,
     /// Only in packed files.
     pub ref_cycles: Option<u64>,
     /// Only in packed files.
@@ -262,6 +293,7 @@ impl Default for Level {
             filter: MnemonicFilter::All,
             heap_check: HeapCheck::Strict,
             mobile: false,
+            language: Language::Asm,
             ref_cycles: None,
             ref_size: None,
             tests: Vec::new(),
@@ -325,6 +357,7 @@ impl Level {
         w.field_uint("seed", self.seed as u64);
         w.field_bool("mobile", self.mobile);
         w.field_str("heap_check", self.heap_check.as_str());
+        w.field_str("language", self.language.as_str());
         for (key, list) in [
             (
                 "allow",
@@ -786,7 +819,7 @@ fn parse_bytes(s: &str) -> Option<Vec<u8>> {
     (!v.is_empty()).then(|| v.into_iter().map(|x| x as u8).collect())
 }
 
-const LEVEL_KEYS: [&str; 17] = [
+const LEVEL_KEYS: [&str; 18] = [
     "id",
     "version",
     "chapter",
@@ -802,6 +835,7 @@ const LEVEL_KEYS: [&str; 17] = [
     "forbid",
     "heap_check",
     "mobile",
+    "language",
     "ref_cycles",
     "ref_size",
 ];
@@ -1073,7 +1107,7 @@ impl<'a> Parser<'a> {
                 l.version = 1;
                 v == "1"
             }
-            "chapter" => set(&mut l.chapter, parse_in_range(v, 0, 7)),
+            "chapter" => set(&mut l.chapter, parse_in_range(v, 0, MAX_CHAPTER as i64)),
             "order" => set(&mut l.order, parse_in_range(v, 1, 999)),
             "title.de" => text(&mut l.title_de, v),
             "title.en" => text(&mut l.title_en, v),
@@ -1084,6 +1118,7 @@ impl<'a> Parser<'a> {
             "seed" => set(&mut l.seed, parse_in_range(v, 0, u32::MAX as i64)),
             "heap_check" => HeapCheck::parse(v).map(|h| l.heap_check = h).is_some(),
             "mobile" => yes_no(v).map(|m| l.mobile = m).is_some(),
+            "language" => Language::parse(v).map(|x| l.language = x).is_some(),
             "ref_cycles" => parse_in_range(v, 0, i64::MAX)
                 .map(|c| l.ref_cycles = Some(c as u64))
                 .is_some(),

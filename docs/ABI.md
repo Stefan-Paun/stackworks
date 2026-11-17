@@ -86,6 +86,7 @@ changed after an export call.
 | `sess_run_tests` | (s) → len | run all tests (see below) |
 | `sess_reference_screen` | (s, test) → ptr | 4096 bytes: the reference solution's screen after `test` (native/unpacked levels only; 0 if unavailable) |
 | `sess_digest` | (s) → len | 16 lower-case hex characters (raw ASCII, not JSON) |
+| `setz_compile` | (ptr, len, lang) → len | compile Setzwerk source ([SETZWERK.md](SETZWERK.md)); `lang` 0 = English, 1 = German comments; `{"ok":true,"asm":…}` or `{"ok":false,"error":{key,line,col,args}}` (argument values are strings) |
 
 Functions without a listed result return nothing. `sess_in_int`, `sess_in_text` and
 `sess_in_close` return the current status so the UI can see whether a waiting program can continue.
@@ -168,13 +169,16 @@ argument names of [ERRORS.md](ERRORS.md).
 // level_info
 {"id":"2-2-bis-zur-null","version":1,"chapter":2,"order":2,"kind":"normal",
  "title":{"de":"Bis zur Null","en":"Until Zero"},"card":{"de":"…","en":"…"},
- "budget":100000,"seed":2202,"mobile":false,"heap_check":"strict",
+ "budget":100000,"seed":2202,"mobile":false,"heap_check":"strict","language":"asm",
  "allow":null,"forbid":null,
  "tests":[{"index":0,"name":"grundfall","in":[3,4,5,0],"in_text":"","out":[12],"out_text":null,
            "regs":[],"set":[],"call":null,"expect_reg":[],"expect":[],
            "screen_init":null,"expect_screen":null,"heap_empty":false}, …],   // visible tests only
  "hidden_tests":1,"ref_cycles":null,"ref_size":null,
  "sections":["text.de","text.en","hint.de","hint.en","learned.de","learned.en","start"]}
+
+// setz_compile
+{"ok":false,"error":{"key":"setz.unknown_variable","line":1,"col":13,"args":{"name":"x"}}}
 
 // sess_fault
 {"key":"fault.null_access","pc":260,"step":7,"args":{"addr":8,"access":"w"}}   // or null
