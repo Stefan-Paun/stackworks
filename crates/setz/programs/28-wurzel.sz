@@ -1,0 +1,25 @@
+// Integer square root by binary search; n / mid avoids overflow.
+fn wurzel(n) {
+    if (n < 2) { return n; }
+    var lo = 1;
+    var hi = n;
+    var ergebnis = 1;
+    while (lo <= hi) {
+        var mitte = lo + (hi - lo) / 2;
+        if (mitte <= n / mitte) {
+            ergebnis = mitte;
+            lo = mitte + 1;
+        } else {
+            hi = mitte - 1;
+        }
+    }
+    return ergebnis;
+}
+
+fn main() {
+    print(wurzel(0));
+    print(wurzel(15));
+    print(wurzel(16));
+    print(wurzel(1000000));
+    print(wurzel(2147483647));
+}

@@ -1,0 +1,12 @@
+// Four parameters: exactly r0-r3.
+fn hanoi(n, von, nach, ueber) {
+    if (n == 0) { return; }
+    hanoi(n - 1, von, ueber, nach);
+    print(von);
+    print(nach);
+    hanoi(n - 1, ueber, nach, von);
+}
+
+fn main() {
+    hanoi(3, 1, 3, 2);
+}

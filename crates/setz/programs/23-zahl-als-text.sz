@@ -1,0 +1,10 @@
+// Digits with putc, most significant first, by recursion.
+fn zeige(n) {
+    if (n >= 10) { zeige(n / 10); }
+    putc('0' + n % 10);
+}
+
+fn main() {
+    zeige(9051);
+    putc('\n');
+}

@@ -7,11 +7,19 @@ name = "stapelwerk-cli"
 version = "1.0.0"
 dependencies = [
  "stapelwerk-core",
+ "stapelwerk-setz",
 ]
 
 [[package]]
 name = "stapelwerk-core"
 version = "1.0.0"
+
+[[package]]
+name = "stapelwerk-setz"
+version = "1.0.0"
+dependencies = [
+ "stapelwerk-core",
+]
 
 [[package]]
 name = "stapelwerk-wasm"

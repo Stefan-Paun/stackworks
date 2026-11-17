@@ -1,0 +1,17 @@
+fn ist_prim(n) {
+    if (n < 2) { return 0; }
+    var t = 2;
+    while (t * t <= n) {
+        if (n % t == 0) { return 0; }
+        t = t + 1;
+    }
+    return 1;
+}
+
+fn main() {
+    var n = 0;
+    while (n < 50) {
+        if (ist_prim(n)) { print(n); }
+        n = n + 1;
+    }
+}

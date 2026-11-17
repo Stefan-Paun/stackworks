@@ -1,0 +1,17 @@
+// Block scopes and shadowing.
+var x = 1;
+
+fn main() {
+    print(x);
+    var x = 2;
+    print(x);
+    {
+        var x = 3;
+        print(x);
+    }
+    print(x);
+    {
+        var x = x + 10;   // the right side still sees the outer x
+        print(x);
+    }
+}

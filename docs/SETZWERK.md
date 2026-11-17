@@ -124,7 +124,8 @@ in all functions. **Local variables** must be declared with `var` before use and
   start with `__`), because the label would not assemble; the compiler reports this.
 - Locals and parameters live in block scopes. A name may shadow a global or a name of an enclosing
   block, but not one declared in the same block (parameters count as the outermost block of the
-  function).
+  function). A new name becomes visible after its `var` statement, so in `var x = x + 1;` the
+  right-hand side still means the outer `x`.
 - A function may be called before its definition (recursion and mutual recursion work). The number
   of arguments must match the number of parameters.
 - `main` must have no parameters.

@@ -1,0 +1,5 @@
+// Level 6-1: a function test calls fak directly, so there is no main.
+fn fak(n) {
+    if (n <= 1) { return 1; }
+    return n * fak(n - 1);
+}

@@ -1,0 +1,12 @@
+fn main() {
+    var zeile = 1;
+    while (zeile <= 4) {
+        var k = 0;
+        while (k < zeile) {
+            putc('*');
+            k = k + 1;
+        }
+        putc(10);
+        zeile = zeile + 1;
+    }
+}

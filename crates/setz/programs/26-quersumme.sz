@@ -1,0 +1,17 @@
+// in: 123 9999 0
+fn quersumme(n) {
+    var s = 0;
+    while (n > 0) {
+        s = s + n % 10;
+        n = n / 10;
+    }
+    return s;
+}
+
+fn main() {
+    var x = read();
+    while (x != 0) {
+        print(quersumme(x));
+        x = read();
+    }
+}

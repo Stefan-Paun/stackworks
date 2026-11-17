@@ -1,0 +1,16 @@
+// Mutual recursion: a function may call one defined later.
+fn gerade(n) {
+    if (n == 0) { return 1; }
+    return ungerade(n - 1);
+}
+
+fn ungerade(n) {
+    if (n == 0) { return 0; }
+    return gerade(n - 1);
+}
+
+fn main() {
+    print(gerade(10));
+    print(gerade(7));
+    print(ungerade(7));
+}

@@ -1,0 +1,11 @@
+// Recursion: every call has its own frame with its own n.
+fn fak(n) {
+    if (n <= 1) { return 1; }
+    return n * fak(n - 1);
+}
+
+fn main() {
+    print(fak(0));
+    print(fak(5));
+    print(fak(12));
+}

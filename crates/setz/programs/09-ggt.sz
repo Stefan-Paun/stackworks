@@ -1,0 +1,15 @@
+// Euclid with the remainder.
+fn ggt(a, b) {
+    while (b != 0) {
+        var r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+fn main() {
+    print(ggt(48, 18));
+    print(ggt(17, 5));
+    print(ggt(0, 9));
+}
