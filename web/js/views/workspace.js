@@ -40,7 +40,8 @@ export function setzLineMap(asm) {
   asm.split('\n').forEach((text, i) => {
     const m = SETZ_LINE.exec(text);
     if (m) cur = Number(m[1]);
-    else if (/^;/.test(text)) cur = null; // a comment in column 1 starts a new function or part
+    // A comment in column 1 starts a new function or part; the epilogue belongs to no line.
+    else if (/^;/.test(text) || /^\.exit:/.test(text)) cur = null;
     if (cur !== null) map.set(i + 1, cur);
   });
   return map;
