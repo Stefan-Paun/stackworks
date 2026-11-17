@@ -37,7 +37,7 @@ export default {
   'chapter.7': 'Heap & Lists',
 
   'plan.title': 'Chapter plan',
-  'plan.lede': 'Thirty puzzles on a small 32-bit machine, from registers to the heap. Every level teaches what a real processor and a C compiler do.',
+  'plan.lede': 'Thirty-five puzzles on a small 32-bit machine, from registers to the heap and on to the Setzwerk language. Every level teaches what a real processor and a C compiler do.',
   'plan.continue': 'Continue with {num} {title}',
   'plan.solved': '{done} of {total} solved',
   'plan.unlockAll': 'Unlock everything',

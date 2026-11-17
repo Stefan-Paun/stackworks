@@ -38,7 +38,7 @@ export default {
   'chapter.7': 'Heap und Listen',
 
   'plan.title': 'Kapitelplan',
-  'plan.lede': 'Dreißig Rätsel auf einer kleinen 32-Bit-Maschine, von Registern bis zum Heap. Jedes Level lehrt, was ein echter Prozessor und ein C-Compiler tun.',
+  'plan.lede': 'Fünfunddreißig Rätsel auf einer kleinen 32-Bit-Maschine, von Registern bis zum Heap und zur eigenen Sprache Setzwerk. Jedes Level lehrt, was ein echter Prozessor und ein C-Compiler tun.',
   'plan.continue': 'Weiter mit {num} {title}',
   'plan.solved': '{done} von {total} gelöst',
   'plan.unlockAll': 'Alles freischalten',

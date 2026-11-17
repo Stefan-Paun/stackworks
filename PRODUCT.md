@@ -19,7 +19,7 @@ Aufgabe in jedem Fall: ein Assembler-Rätsel lösen, und dabei mit dem Debugger 
 
 ## Product Purpose
 
-Stapelwerk ist ein Lernspiel im Browser: Man löst Assembler-Rätsel auf einer selbst entworfenen 32-Bit-Lehr-CPU. 30 Levels in 8 Kapiteln führen von „Register ändern“ bis zu Heap-Listen; jedes Level hat Aufgabe, drei Hinweise, sichtbare und verdeckte Tests, Referenzwerte und „Was du gerade gelernt hast“. Erfolg heißt: Lernende können danach einen Stack-Rahmen an die Tafel zeichnen, eine Aufrufkonvention erklären und einen Fehler mit dem Debugger statt durch Raten finden.
+Stapelwerk ist ein Lernspiel im Browser: Man löst Assembler-Rätsel auf einer selbst entworfenen 32-Bit-Lehr-CPU. 35 Levels in 9 Kapiteln führen von „Register ändern“ über Heap-Listen bis zur eigenen kleinen Sprache Setzwerk; jedes Level hat Aufgabe, drei Hinweise, sichtbare und verdeckte Tests, Referenzwerte und „Was du gerade gelernt hast“. Erfolg heißt: Lernende können danach einen Stack-Rahmen an die Tafel zeichnen, eine Aufrufkonvention erklären und einen Fehler mit dem Debugger statt durch Raten finden.
 
 ## Positioning
 
@@ -51,7 +51,7 @@ Stapelwerk schließt die Lücke zwischen den Modellrechnern der Schule (Johnny, 
 
 ## Evidence on Hand
 
-- Kapitelplan und alle 30 Levels (DE/EN) in `levels/`; jedes mit Referenzlösung, Mutationstest (`check-levels --strict --mutate`) und unabhängiger zweiter Lösung geprüft.
+- Kapitelplan und alle 35 Levels (DE/EN) in `levels/`; jedes mit Referenzlösung, Mutationstest (`check-levels --strict --mutate`) und unabhängiger zweiter Lösung geprüft.
 - Der Rust-Kern läuft als WebAssembly (`dist/wasm/stapelwerk.wasm`, ≈ 206 KiB) in der Oberfläche; der JS-Nachbau `vm-mock.js` ist nur noch ein Entwicklungswerkzeug (`?mock=1`).
 - Automatische Tests: Rust (`cargo test`), Node (Einheiten, WASM-Schnittstelle, gebaute Seite) und Browser-Tests in Chrome headless (`npm run test:browser`).
 - Noch nicht vorhanden: Spieltests mit echten Lernenden, Nutzerzahlen, Erfahrungsberichte aus dem Unterricht. Nichts davon darf erfunden werden.

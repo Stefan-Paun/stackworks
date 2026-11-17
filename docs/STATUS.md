@@ -1,8 +1,8 @@
 # Status
 
 **Version 1.0.0 (2026-11-10): feature-complete.** The machine, the assembler, the debugger with time
-travel, the level system, the command-line tool, the WebAssembly bridge, all 30 levels and the
-interface are done and tested. Since 2026-11-17 (branch `setzwerk-2026-11-17`): the Setzwerk compiler, its
+travel, the level system, the command-line tool, the WebAssembly bridge, all 35 levels and the
+interface are done and tested. Since 2026-11-17: the Setzwerk compiler, its
 browser view and chapter 8 with five Setzwerk levels. What is still open is listed at the end.
 
 ## What exists
@@ -13,7 +13,7 @@ browser view and chapter 8 with five Setzwerk levels. What is still open is list
 | Machine | ISA as the single source in `isa.rs` (51 opcodes, 47 mnemonics), CPU, memory with segments, checked heap, 8 system calls, 23 precise faults ([ISA.md](ISA.md)) |
 | Assembler | two passes, expressions, directives, local labels, `li`, short forms, library pre-pass, allow/forbid, diagnostics with UTF-16 columns and suggestions; canonical disassembler |
 | Session | debugger (step, back, run in time slices, goto, breakpoints, `set_reg`, back to the last change, line counters, frames, heap list) with time travel through snapshots and replay |
-| Levels | 30 levels in 8 chapters ([CURRICULUM.md](CURRICULUM.md)), 439 tests in total (326 hidden); parser, test runner, metrics, packer ([LEVELS.md](LEVELS.md)) |
+| Levels | 35 levels in 9 chapters ([CURRICULUM.md](CURRICULUM.md)), 439 tests in total (326 hidden); parser, test runner, metrics, packer ([LEVELS.md](LEVELS.md)) |
 | Setzwerk | `crates/setz`: a small C-like language compiled to commented assembly (DE/EN comments), error keys, AST interpreter for the differential test ([SETZWERK.md](SETZWERK.md)); in the browser as `setz_compile` with the view `#/setzwerk` (source left, generated assembly right, debugged on the normal workspace); chapter 8 with 5 levels (`language = setz`), 79 tests |
 | CLI | `asm`, `dis`, `run` (also `--level`/`--test`/`--trace`), `check-levels --strict --mutate` (also Setzwerk levels), `pack-levels`, `compile`, `isa-table`, `fuzz-gen` |
 | WebAssembly | ABI v1: 43 functions plus `memory` (`setz_compile` added), no imports ([ABI.md](ABI.md), [abi-exports.txt](abi-exports.txt)); `web/js/vm.js` is the only module that touches it |
@@ -28,7 +28,7 @@ browser view and chapter 8 with five Setzwerk levels. What is still open is list
 | `cargo test --workspace` | 223 passed, 0 failed, 3 ignored (two benchmarks, the exhaustive 2³² test that CI runs in release mode) |
 | `node --test test/unit test/wasm test/site` | 94 passed |
 | `npm run test:browser` | 22 passed |
-| `check-levels --strict --mutate levels/` | 30 levels good; 550 of 550 deletions caught, 12 lines skipped with `; mutate:skip` |
+| `check-levels --strict --mutate levels/` | 35 levels good; 550 of 550 assembly deletions caught plus 27 of 27 Setzwerk statement deletions in chapter 8 (7 of them only because the program no longer compiles), 12 lines skipped with `; mutate:skip` |
 | Second solutions (`tests/solutions/`) | 28 solutions written from the task text and hints only, without the reference; all pass their levels (`crates/cli/tests/alt_solutions.rs`). Not included: the tutorial 0.1 and the sample level 2.2 |
 | `dist/wasm/stapelwerk.wasm` | 209 893 bytes (limit 300 KiB); with the Setzwerk compiler 266 756 bytes (260.5 KiB) |
 | Setzwerk (2026-11-17) | `cargo test --workspace` 237 passed, 0 failed, 3 ignored; `check-levels --strict --mutate levels/` 35 levels good (chapter 8: 27 of 27 statement deletions caught, 7 of them by the compiler); Node tests 98 passed; browser tests 25 passed (3 new in `setzwerk.test.mjs`) |
