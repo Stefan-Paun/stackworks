@@ -99,11 +99,11 @@ next to it (`language = setz`). Each level makes one translation pattern visible
 
 | ID | Title DE / EN | Learning goal | Task | Test | New | Diff | Ref |
 |---|---|---|---|---|---|---|---|
-| 8.1 | Quersumme / Digit Sum | A high-level loop is labels, `cmp` and jumps. | Read numbers until 0, print the digit sum of each. | I/O | `while`, `%`, `/`, `var` in a frame | 2 | 38 |
-| 8.2 | Größter gemeinsamer Teiler / Greatest Common Divisor | The compiler writes prologue and epilogue and keeps the ABI. | Function `ggt(a, b)` (function test). | function test + ABI | parameters in the frame | 2 | 29 |
-| 8.3 | Primzahlen / Prime Numbers | Early `return` jumps to the epilogue; calls in a loop. | Read n, print all primes up to n. | I/O | `return` in a loop, function result as condition | 3 | 57 |
-| 8.4 | Binär rückwärts gedacht / Binary, Thought Backwards | Recursion keeps values in frames. | Read n, print it in binary with `putc`. | text output | `putc`, characters as numbers | 3 | 36 |
-| 8.5 [F] | Potenz modulo / Power Modulo | Square and multiply; depth = number of bits. | Function `potmod(b, e, m)` (function test). | function test + ABI | three arguments, `%` after every product | 4 | – |
+| 8.1 | Quersumme / Digit Sum | A high-level loop is labels, `cmp` and jumps. | Read numbers until 0, print the digit sum of each. | I/O | `while`, `%`, `/`, `var` in a frame | 2 | 36 |
+| 8.2 | Größter gemeinsamer Teiler / Greatest Common Divisor | The compiler writes prologue and epilogue and keeps the ABI. | Function `ggt(a, b)` (function test). | function test + ABI | parameters in the frame | 2 | 22 |
+| 8.3 | Primzahlen / Prime Numbers | Early `return` jumps to the epilogue; calls in a loop. | Read n, print all primes up to n. | I/O | `return` in a loop, function result as condition | 3 | 55 |
+| 8.4 | Binär rückwärts gedacht / Binary, Thought Backwards | Recursion keeps values in frames. | Read n, print it in binary with `putc`. | text output | `putc`, characters as numbers | 3 | 34 |
+| 8.5 [F] | Potenz modulo / Power Modulo | Square and multiply; depth = number of bits. | Function `potmod(b, e, m)` (function test). | function test + ABI | three arguments, `%` after every product | 4 | 51 |
 
 ## Didactic curve (manual terms introduced before each chapter)
 
